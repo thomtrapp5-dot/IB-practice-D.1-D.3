@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IB Physics Topic D Practice App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            min-height: 90vh;
+        }
+
+        /* Main Content Area (Left Column) */
+        .main-content {
+            flex: 0 0 70%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .question-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 20px;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .topic-badge {
+            background: #667eea;
+            color: white;
+        }
+
+        .type-badge {
+            background: #764ba2;
+            color: white;
+        }
+
+        .marks-badge {
+            background: #48bb78;
+            color: white;
+        }
+
+        .timer {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer.warning {
+            color: #e53e3e;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .question-container {
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            white-space: pre-wrap;
+        }
+
+        .answer-area {
+            margin-bottom: 20px;
+        }
+
+        .option-button {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .option-button:hover {
+            background: #f7fafc;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option-button.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .answer-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            font-size: 1em;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .answer-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-submit:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-next {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .feedback-area {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .feedback-area.show {
+            display: block;
+        }
+
+        .feedback-area.correct {
+            background: #c6f6d5;
+            border-left: 4px solid #48bb78;
+        }
+
+        .feedback-area.incorrect {
+            background: #fed7d7;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .feedback-area.grading {
+            background: #feebc8;
+            border-left: 4px solid #ed8936;
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .feedback-content {
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .flash-correct {
+            animation: flashGreen 0.5s ease;
+        }
+
+        .flash-incorrect {
+            animation: flashRed 0.5s ease;
+        }
+
+        @keyframes flashGreen {
+            0%, 100% { background: white; }
+            50% { background: #c6f6d5; }
+        }
+
+        @keyframes flashRed {
+            0%, 100% { background: white; }
+            50% { background: #fed7d7; }
+        }
+
+        /* Sidebar (Right Column) */
+        .sidebar {
+            flex: 0 0 30%;
+            background: #2d3748;
+            color: white;
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .sidebar h2 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .sidebar h3 {
+            font-size: 1.1em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #a0aec0;
+        }
+
+        .sidebar table {
+            width: 100%;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .sidebar table td {
+            padding: 5px;
+            border-bottom: 1px solid #4a5568;
+        }
+
+        .sidebar table td:first-child {
+            font-weight: bold;
+            color: #cbd5e0;
+        }
+
+        .equation {
+            background: #1a202c;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .equation-label {
+            color: #a0aec0;
+            font-size: 0.85em;
+            margin-bottom: 3px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a202c;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 5px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            .main-content, .sidebar {
+                flex: 1 1 100%;
+            }
+            .sidebar {
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main Content Area -->
+        <div class="main-content" id="mainContent">
+            <div class="header">
+                <h1>IB Physics Topic D Practice</h1>
+                <div class="subtitle">Fields: Gravitational, Electric & Magnetic</div>
+            </div>
+
+            <div class="question-info">
+                <div class="question-meta">
+                    <span class="badge topic-badge" id="topicBadge">D.1</span>
+                    <span class="badge type-badge" id="typeBadge">Multiple Choice</span>
+                    <span class="badge marks-badge" id="marksBadge">1 Mark</span>
+                </div>
+                <div class="timer" id="timer">90</div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-text" id="questionText">Loading question...</div>
+                <div class="answer-area" id="answerArea"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-submit" id="submitBtn">Submit Answer</button>
+                <button class="btn btn-next" id="nextBtn">Next Question</button>
+            </div>
+
+            <div class="feedback-area" id="feedbackArea">
+                <div class="feedback-title" id="feedbackTitle"></div>
+                <div class="feedback-content" id="feedbackContent"></div>
+            </div>
+        </div>
+
+        <!-- Sidebar Reference Area -->
+        <div class="sidebar">
+            <h2>Reference Data</h2>
+
+            <h3>Fundamental Constants</h3>
+            <table>
+                <tr><td>G</td><td>6.67 × 10⁻¹¹ N m² kg⁻²</td></tr>
+                <tr><td>g</td><td>9.81 m s⁻² (on Earth)</td></tr>
+                <tr><td>e</td><td>1.60 × 10⁻¹⁹ C</td></tr>
+                <tr><td>mₑ</td><td>9.11 × 10⁻³¹ kg</td></tr>
+                <tr><td>mₚ</td><td>1.673 × 10⁻²⁷ kg</td></tr>
+                <tr><td>ε₀</td><td>8.85 × 10⁻¹² F m⁻¹</td></tr>
+                <tr><td>μ₀</td><td>4π × 10⁻⁷ H m⁻¹</td></tr>
+                <tr><td>c</td><td>3.00 × 10⁸ m s⁻¹</td></tr>
+            </table>
+
+            <h3>SI Multipliers</h3>
+            <table>
+                <tr><td>pico (p)</td><td>10⁻¹²</td></tr>
+                <tr><td>nano (n)</td><td>10⁻⁹</td></tr>
+                <tr><td>micro (μ)</td><td>10⁻⁶</td></tr>
+                <tr><td>milli (m)</td><td>10⁻³</td></tr>
+                <tr><td>kilo (k)</td><td>10³</td></tr>
+                <tr><td>mega (M)</td><td>10⁶</td></tr>
+                <tr><td>giga (G)</td><td>10⁹</td></tr>
+                <tr><td>tera (T)</td><td>10¹²</td></tr>
+            </table>
+
+            <h2>Topic D Equations</h2>
+
+            <h3>D.1 Gravitational Fields</h3>
+            <div class="equation-label">Gravitational field strength:</div>
+            <div class="equation">g = F/m</div>
+
+            <div class="equation-label">Newton's law of gravitation:</div>
+            <div class="equation">F = Gm₁m₂/r²</div>
+
+            <div class="equation-label">Gravitational field of point mass:</div>
+            <div class="equation">g = GM/r²</div>
+
+            <div class="equation-label">Gravitational potential energy:</div>
+            <div class="equation">Eₚ = -GMm/r</div>
+
+            <div class="equation-label">Gravitational potential:</div>
+            <div class="equation">Vg = -GM/r</div>
+
+            <div class="equation-label">Orbital speed:</div>
+            <div class="equation">v = √(GM/r)</div>
+
+            <div class="equation-label">Orbital period:</div>
+            <div class="equation">T² = (4π²/GM)r³</div>
+
+            <h3>D.2 Electric Fields</h3>
+            <div class="equation-label">Electric field strength:</div>
+            <div class="equation">E = F/q</div>
+
+            <div class="equation-label">Coulomb's law:</div>
+            <div class="equation">F = kq₁q₂/r² = q₁q₂/(4πε₀r²)</div>
+
+            <div class="equation-label">Electric field of point charge:</div>
+            <div class="equation">E = kQ/r² = Q/(4πε₀r²)</div>
+
+            <div class="equation-label">Electric potential energy:</div>
+            <div class="equation">Eₚ = kq₁q₂/r = q₁q₂/(4πε₀r)</div>
+
+            <div class="equation-label">Electric potential:</div>
+            <div class="equation">V = kQ/r = Q/(4πε₀r)</div>
+
+            <div class="equation-label">Work done by electric field:</div>
+            <div class="equation">W = qV = qEd</div>
+
+            <div class="equation-label">Uniform field between plates:</div>
+            <div class="equation">E = V/d</div>
+
+            <h3>D.3 Magnetic Fields</h3>
+            <div class="equation-label">Magnetic force on moving charge:</div>
+            <div class="equation">F = qvB sin θ</div>
+
+            <div class="equation-label">Magnetic force on current:</div>
+            <div class="equation">F = BIL sin θ</div>
+
+            <div class="equation-label">Radius of circular motion:</div>
+            <div class="equation">r = mv/(qB)</div>
+
+            <div class="equation-label">Magnetic field of long wire:</div>
+            <div class="equation">B = μ₀I/(2πr)</div>
+
+            <div class="equation-label">Magnetic field inside solenoid:</div>
+            <div class="equation">B = μ₀nI</div>
+
+            <div class="equation-label">Magnetic flux:</div>
+            <div class="equation">Φ = BA cos θ</div>
+
+            <div class="equation-label">Faraday's law:</div>
+            <div class="equation">ε = -N(ΔΦ/Δt)</div>
+
+            <h3>D.4 Electromagnetic Induction (HL)</h3>
+            <div class="equation-label">Induced emf in moving conductor:</div>
+            <div class="equation">ε = BLv</div>
+
+            <div class="equation-label">Transformer equation:</div>
+            <div class="equation">Vₛ/Vₚ = Nₛ/Nₚ</div>
+
+            <div class="equation-label">Ideal transformer power:</div>
+            <div class="equation">IₛVₛ = IₚVₚ</div>
+        </div>
+    </div>
+
+    <script>
+        // ====================================================================
+        // DATA STRUCTURE - User should populate this with questions from PDFs
+        // ====================================================================
+        // Source PDFs:
+        // - 'Topic D - Paper 2 Exam Questions.pdf' for question text, options, marks
+        // - 'Topic D - Answers.pdf' for answer and fullAnswer
+
+        const questions = [
+            {
+                id: 1,
+                topic: 'D.1',
+                type: 'mc', // 'mc' for multiple-choice, 'fr' for free-response
+                // Source: Topic D - Paper 2 Exam Questions.pdf
+                text: "A satellite orbits Earth in a circular path at constant speed. Which combination of statements about the resultant force is correct?\n\nI. It is equal to the gravitational force.\nII. It is equal to the mass times acceleration.\nIII. It is equal to the centripetal force.",
+                marks: 1,
+                // Source: Topic D - Paper 2 Exam Questions.pdf
+                options: ['I and II only', 'I and III only', 'II and III only', 'I, II and III'],
+                // Source: Topic D - Answers.pdf
+                answer: 'I, II and III',
+                fullAnswer: 'D. The resultant force on a satellite in a circular orbit is the gravitational force, which provides the necessary centripetal force. By Newton\'s second law, this force is also equal to mass times acceleration.'
+            },
+            {
+                id: 2,
+                topic: 'D.1',
+                type: 'fr',
+                // Source: Topic D - Paper 2 Exam Questions.pdf
+                text: "(a) State Newton's law of gravitation. [2]",
+                marks: 2,
+                options: null, // Null for 'fr' questions
+                answer: null, // Null for 'fr' questions
+                // Source: Topic D - Answers.pdf
+                fullAnswer: "There is an attractive force between two point masses. This force is proportional to the product of the masses and inversely proportional to the square of their separation."
+            },
+            {
+                id: 3,
+                topic: 'D.2',
+                type: 'mc',
+                // Source: Topic D - Paper 2 Exam Questions.pdf
+                text: "Two point charges +Q and -Q are separated by a distance d. At which point is the electric field strength zero?",
+                marks: 1,
+                // Source: Topic D - Paper 2 Exam Questions.pdf
+                options: [
+                    'At the midpoint between the charges',
+                    'At a point d/4 from +Q',
+                    'At a point d/4 from -Q',
+                    'The electric field is never zero'
+                ],
+                // Source: Topic D - Answers.pdf
+                answer: 'The electric field is never zero',
+                fullAnswer: 'D. Since the charges are opposite in sign, the electric fields from both charges point in the same direction at any point along the line joining them. Therefore, the electric field can never be zero.'
+            },
+            {
+                id: 4,
+                topic: 'D.3',
+                type: 'fr',
+                // Source: Topic D - Paper 2 Exam Questions.pdf
+                text: "(a) Define magnetic flux.\n(b) A circular coil of radius 5.0 cm has 20 turns. The coil is placed perpendicular to a uniform magnetic field of strength 0.40 T. Calculate the magnetic flux through the coil. [4]",
+                marks: 4,
+                options: null,
+                answer: null,
+                // Source: Topic D - Answers.pdf
+                fullAnswer: "(a) Magnetic flux is the product of the magnetic field strength and the area perpendicular to the field, or Φ = BA cos θ.\n\n(b) Area = πr² = π(0.05)² = 7.85 × 10⁻³ m²\nFlux through one turn = BA = 0.40 × 7.85 × 10⁻³ = 3.14 × 10⁻³ Wb\nTotal flux = N × flux per turn = 20 × 3.14 × 10⁻³ = 6.28 × 10⁻² Wb or 0.063 Wb"
+            }
+            // User will add more questions here from their PDF documents
+        ];
+
+        // ====================================================================
+        // APPLICATION STATE
+        // ====================================================================
+        let currentQuestionIndex = 0;
+        let shuffledQuestions = [];
+        let timerInterval = null;
+        let timeRemaining = 0;
+        let userAnswer = null;
+        let hasSubmitted = false;
+
+        // ====================================================================
+        // DOM ELEMENTS
+        // ====================================================================
+        const mainContent = document.getElementById('mainContent');
+        const topicBadge = document.getElementById('topicBadge');
+        const typeBadge = document.getElementById('typeBadge');
+        const marksBadge = document.getElementById('marksBadge');
+        const timerDisplay = document.getElementById('timer');
+        const questionText = document.getElementById('questionText');
+        const answerArea = document.getElementById('answerArea');
+        const submitBtn = document.getElementById('submitBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const feedbackArea = document.getElementById('feedbackArea');
+        const feedbackTitle = document.getElementById('feedbackTitle');
+        const feedbackContent = document.getElementById('feedbackContent');
+
+        // ====================================================================
+        // INITIALIZATION
+        // ====================================================================
+        function init() {
+            // Shuffle questions array
+            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+
+            // Set up event listeners
+            submitBtn.addEventListener('click', handleSubmit);
+            nextBtn.addEventListener('click', handleNext);
+
+            // Display first question
+            displayQuestion();
+        }
+
+        // ====================================================================
+        // DISPLAY QUESTION
+        // ====================================================================
+        function displayQuestion() {
+            const question = shuffledQuestions[currentQuestionIndex];
+
+            // Reset state
+            hasSubmitted = false;
+            userAnswer = null;
+            feedbackArea.classList.remove('show', 'correct', 'incorrect', 'grading');
+            submitBtn.disabled = false;
+
+            // Update badges
+            topicBadge.textContent = question.topic;
+            typeBadge.textContent = question.type === 'mc' ? 'Multiple Choice' : 'Free Response';
+            marksBadge.textContent = question.marks === 1 ? '1 Mark' : `${question.marks} Marks`;
+
+            // Display question text
+            questionText.textContent = question.text;
+
+            // Display answer interface based on question type
+            if (question.type === 'mc') {
+                displayMultipleChoice(question);
+            } else {
+                displayFreeResponse(question);
+            }
+
+            // Start timer
+            startTimer(question);
+        }
+
+        // ====================================================================
+        // DISPLAY MULTIPLE CHOICE OPTIONS
+        // ====================================================================
+        function displayMultipleChoice(question) {
+            answerArea.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.addEventListener('click', () => selectOption(button, option));
+                answerArea.appendChild(button);
+            });
+        }
+
+        // ====================================================================
+        // SELECT OPTION (Multiple Choice)
+        // ====================================================================
+        function selectOption(button, option) {
+            if (hasSubmitted) return;
+
+            // Deselect all options
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            // Select clicked option
+            button.classList.add('selected');
+            userAnswer = option;
+        }
+
+        // ====================================================================
+        // DISPLAY FREE RESPONSE TEXTAREA
+        // ====================================================================
+        function displayFreeResponse(question) {
+            answerArea.innerHTML = '<textarea class="answer-textarea" id="userAnswerText" placeholder="Type your answer here..."></textarea>';
+
+            const textarea = document.getElementById('userAnswerText');
+            textarea.addEventListener('input', () => {
+                userAnswer = textarea.value;
+            });
+        }
+
+        // ====================================================================
+        // TIMER LOGIC
+        // ====================================================================
+        function startTimer(question) {
+            // Clear any existing timer
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            // Calculate time based on question type
+            // MC: 90 seconds, FR: 90 seconds * marks
+            if (question.type === 'mc') {
+                timeRemaining = 90;
+            } else {
+                timeRemaining = 90 * question.marks;
+            }
+
+            updateTimerDisplay();
+
+            // Start countdown
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+
+                // Add warning class when time is running out
+                if (timeRemaining <= 30) {
+                    timerDisplay.classList.add('warning');
+                }
+
+                // Auto-submit when time runs out
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    if (!hasSubmitted) {
+                        handleSubmit();
+                    }
+                }
+            }, 1000);
+        }
+
+        // ====================================================================
+        // UPDATE TIMER DISPLAY
+        // ====================================================================
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeRemaining > 30) {
+                timerDisplay.classList.remove('warning');
+            }
+        }
+
+        // ====================================================================
+        // HANDLE SUBMIT
+        // ====================================================================
+        async function handleSubmit() {
+            if (hasSubmitted) return;
+
+            const question = shuffledQuestions[currentQuestionIndex];
+
+            // Check if user has provided an answer
+            if (!userAnswer || (typeof userAnswer === 'string' && userAnswer.trim() === '')) {
+                alert('Please provide an answer before submitting.');
+                return;
+            }
+
+            hasSubmitted = true;
+            submitBtn.disabled = true;
+            clearInterval(timerInterval);
+
+            // Grade based on question type
+            if (question.type === 'mc') {
+                gradeMultipleChoice(question, userAnswer);
+            } else {
+                await gradeFreeResponse(question, userAnswer);
+            }
+        }
+
+        // ====================================================================
+        // GRADE MULTIPLE CHOICE
+        // ====================================================================
+        function gradeMultipleChoice(question, userAnswer) {
+            const isCorrect = userAnswer === question.answer;
+
+            // Flash main content area
+            if (isCorrect) {
+                mainContent.classList.add('flash-correct');
+                feedbackArea.className = 'feedback-area show correct';
+                feedbackTitle.textContent = '✓ Correct!';
+            } else {
+                mainContent.classList.add('flash-incorrect');
+                feedbackArea.className = 'feedback-area show incorrect';
+                feedbackTitle.textContent = '✗ Incorrect';
+            }
+
+            // Remove flash animation after it completes
+            setTimeout(() => {
+                mainContent.classList.remove('flash-correct', 'flash-incorrect');
+            }, 500);
+
+            // Show explanation
+            feedbackContent.textContent = question.fullAnswer;
+        }
+
+        // ====================================================================
+        // GRADE FREE RESPONSE (GLM-4 API)
+        // ====================================================================
+        async function gradeFreeResponse(question, userAnswer) {
+            // Show loading state
+            feedbackArea.className = 'feedback-area show grading';
+            feedbackTitle.innerHTML = 'Grading... <span class="loading"></span>';
+            feedbackContent.textContent = 'Please wait while your answer is being evaluated by AI.';
+
+            try {
+                const response = await gradeWithGLM(userAnswer, question.fullAnswer, question.marks);
+
+                // Display AI feedback
+                feedbackArea.className = 'feedback-area show correct';
+                feedbackTitle.textContent = 'AI Feedback';
+                feedbackContent.textContent = response;
+
+            } catch (error) {
+                // Handle error
+                feedbackArea.className = 'feedback-area show incorrect';
+                feedbackTitle.textContent = 'Error';
+                feedbackContent.textContent = `Failed to grade answer: ${error.message}\n\nOfficial Answer:\n${question.fullAnswer}`;
+            }
+        }
+
+        // ====================================================================
+        // GLM-4 API INTEGRATION
+        // ====================================================================
+        async function gradeWithGLM(userAnswer, fullAnswer, marks) {
+            const endpoint = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer bc69519f39fc40e0be915a481831e817.L0AK4MgCiuWD39Ow'
+            };
+
+            const body = JSON.stringify({
+                model: 'glm-4',
+                messages: [
+                    {
+                        role: 'user',
+                        content: `You are an IB Physics examiner. Compare the student's answer to the official answer and provide detailed feedback.
+
+Student's Answer:
+${userAnswer}
+
+Official Answer:
+${fullAnswer}
+
+Total Marks Available: ${marks}
+
+Provide:
+1. Marks awarded (out of ${marks})
+2. What was correct
+3. What was missing or incorrect
+4. Suggestions for improvement
+
+Be fair but rigorous in your grading, following IB marking criteria.`
+                    }
+                ]
+            });
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: headers,
+                body: body
+            });
+
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            // Extract the assistant's message from the response
+            if (data.choices && data.choices.length > 0) {
+                return data.choices[0].message.content;
+            } else {
+                throw new Error('No response from AI');
+            }
+        }
+
+        // ====================================================================
+        // HANDLE NEXT QUESTION
+        // ====================================================================
+        function handleNext() {
+            currentQuestionIndex++;
+
+            // If we've gone through all questions, reshuffle and restart
+            if (currentQuestionIndex >= shuffledQuestions.length) {
+                if (confirm('You have completed all questions! Would you like to start over?')) {
+                    shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+                    currentQuestionIndex = 0;
+                    displayQuestion();
+                }
+            } else {
+                displayQuestion();
+            }
+        }
+
+        // ====================================================================
+        // START APPLICATION
+        // ====================================================================
+        // Initialize the app when page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
