@@ -434,80 +434,35 @@
             <h2>Topic D Equations</h2>
 
             <h3>D.1 Gravitational Fields</h3>
-            <div class="equation-label">Gravitational field strength:</div>
-            <div class="equation">g = F/m</div>
-
-            <div class="equation-label">Newton's law of gravitation:</div>
+            <div class="equation-label">Standard level and higher level:</div>
             <div class="equation">F = Gm₁m₂/r²</div>
+            <div class="equation">g = F/m = GM/r²</div>
 
-            <div class="equation-label">Gravitational field of point mass:</div>
-            <div class="equation">g = GM/r²</div>
-
-            <div class="equation-label">Gravitational potential energy:</div>
-            <div class="equation">Eₚ = -GMm/r</div>
-
-            <div class="equation-label">Gravitational potential:</div>
+            <div class="equation-label">Additional higher level:</div>
+            <div class="equation">Eₚ = -Gm₁m₂/r</div>
             <div class="equation">Vg = -GM/r</div>
+            <div class="equation">g = -ΔVg/Δr</div>
+            <div class="equation">W = mΔVg</div>
+            <div class="equation">v_esc = √(2GM/r)</div>
+            <div class="equation">v_orbital = √(GM/r)</div>
 
-            <div class="equation-label">Orbital speed:</div>
-            <div class="equation">v = √(GM/r)</div>
-
-            <div class="equation-label">Orbital period:</div>
-            <div class="equation">T² = (4π²/GM)r³</div>
-
-            <h3>D.2 Electric Fields</h3>
-            <div class="equation-label">Electric field strength:</div>
+            <h3>D.2 Electric and Magnetic Fields</h3>
+            <div class="equation-label">Standard level and higher level:</div>
+            <div class="equation">F = kq₁q₂/r² where k = 1/(4πε₀)</div>
             <div class="equation">E = F/q</div>
-
-            <div class="equation-label">Coulomb's law:</div>
-            <div class="equation">F = kq₁q₂/r² = q₁q₂/(4πε₀r²)</div>
-
-            <div class="equation-label">Electric field of point charge:</div>
-            <div class="equation">E = kQ/r² = Q/(4πε₀r²)</div>
-
-            <div class="equation-label">Electric potential energy:</div>
-            <div class="equation">Eₚ = kq₁q₂/r = q₁q₂/(4πε₀r)</div>
-
-            <div class="equation-label">Electric potential:</div>
-            <div class="equation">V = kQ/r = Q/(4πε₀r)</div>
-
-            <div class="equation-label">Work done by electric field:</div>
-            <div class="equation">W = qV = qEd</div>
-
-            <div class="equation-label">Uniform field between plates:</div>
             <div class="equation">E = V/d</div>
 
-            <h3>D.3 Magnetic Fields</h3>
-            <div class="equation-label">Magnetic force on moving charge:</div>
+            <div class="equation-label">Additional higher level:</div>
+            <div class="equation">Eₚ = kq₁q₂/r</div>
+            <div class="equation">Ve = kQ/r</div>
+            <div class="equation">E = -ΔVe/Δr</div>
+            <div class="equation">W = qΔVe</div>
+
+            <h3>D.3 Motion in Electromagnetic Fields</h3>
+            <div class="equation-label">Standard level and higher level:</div>
             <div class="equation">F = qvB sin θ</div>
-
-            <div class="equation-label">Magnetic force on current:</div>
             <div class="equation">F = BIL sin θ</div>
-
-            <div class="equation-label">Radius of circular motion:</div>
-            <div class="equation">r = mv/(qB)</div>
-
-            <div class="equation-label">Magnetic field of long wire:</div>
-            <div class="equation">B = μ₀I/(2πr)</div>
-
-            <div class="equation-label">Magnetic field inside solenoid:</div>
-            <div class="equation">B = μ₀nI</div>
-
-            <div class="equation-label">Magnetic flux:</div>
-            <div class="equation">Φ = BA cos θ</div>
-
-            <div class="equation-label">Faraday's law:</div>
-            <div class="equation">ε = -N(ΔΦ/Δt)</div>
-
-            <h3>D.4 Electromagnetic Induction (HL)</h3>
-            <div class="equation-label">Induced emf in moving conductor:</div>
-            <div class="equation">ε = BLv</div>
-
-            <div class="equation-label">Transformer equation:</div>
-            <div class="equation">Vₛ/Vₚ = Nₛ/Nₚ</div>
-
-            <div class="equation-label">Ideal transformer power:</div>
-            <div class="equation">IₛVₛ = IₚVₚ</div>
+            <div class="equation">F/L = μ₀I₁I₂/(2πr)</div>
         </div>
     </div>
 
@@ -518,6 +473,9 @@
         // Source PDFs:
         // - 'Topic D - Paper 2 Exam Questions.pdf' for question text, options, marks
         // - 'Topic D - Answers.pdf' for answer and fullAnswer
+        //
+        // IMPORTANT: Only add questions from D.1, D.2, and D.3 topics.
+        // Do NOT include D.4 questions as they are not covered in this app.
 
         const questions = [
             {
@@ -608,8 +566,13 @@
         // INITIALIZATION
         // ====================================================================
         function init() {
+            // Filter to only include D.1, D.2, and D.3 questions
+            const filteredQuestions = questions.filter(q =>
+                q.topic === 'D.1' || q.topic === 'D.2' || q.topic === 'D.3'
+            );
+
             // Shuffle questions array
-            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+            shuffledQuestions = [...filteredQuestions].sort(() => Math.random() - 0.5);
             currentQuestionIndex = 0;
 
             // Set up event listeners
@@ -810,10 +773,10 @@
             try {
                 const response = await gradeWithGemini(userAnswer, question.fullAnswer, question.marks);
 
-                // Display AI feedback
+                // Display AI feedback AND official marking scheme
                 feedbackArea.className = 'feedback-area show correct';
                 feedbackTitle.textContent = 'AI Feedback';
-                feedbackContent.textContent = response;
+                feedbackContent.textContent = `${response}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nOFFICIAL MARKING SCHEME:\n${question.fullAnswer}`;
 
             } catch (error) {
                 // Handle error
@@ -898,7 +861,11 @@ Be fair but rigorous in your grading, following IB marking criteria.`;
             // If we've gone through all questions, reshuffle and restart
             if (currentQuestionIndex >= shuffledQuestions.length) {
                 if (confirm('You have completed all questions! Would you like to start over?')) {
-                    shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+                    // Filter to only include D.1, D.2, and D.3 questions
+                    const filteredQuestions = questions.filter(q =>
+                        q.topic === 'D.1' || q.topic === 'D.2' || q.topic === 'D.3'
+                    );
+                    shuffledQuestions = [...filteredQuestions].sort(() => Math.random() - 0.5);
                     currentQuestionIndex = 0;
                     displayQuestion();
                 }
