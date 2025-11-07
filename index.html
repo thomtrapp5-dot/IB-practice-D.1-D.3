@@ -799,7 +799,7 @@
         }
 
         // ====================================================================
-        // GRADE FREE RESPONSE (GLM-4 API)
+        // GRADE FREE RESPONSE (GOOGLE GEMINI API)
         // ====================================================================
         async function gradeFreeResponse(question, userAnswer) {
             // Show loading state
@@ -808,7 +808,7 @@
             feedbackContent.textContent = 'Please wait while your answer is being evaluated by AI.';
 
             try {
-                const response = await gradeWithGLM(userAnswer, question.fullAnswer, question.marks);
+                const response = await gradeWithGemini(userAnswer, question.fullAnswer, question.marks);
 
                 // Display AI feedback
                 feedbackArea.className = 'feedback-area show correct';
@@ -824,22 +824,17 @@
         }
 
         // ====================================================================
-        // GLM-4 API INTEGRATION
+        // GOOGLE GEMINI API INTEGRATION
         // ====================================================================
-        async function gradeWithGLM(userAnswer, fullAnswer, marks) {
-            const endpoint = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
+        async function gradeWithGemini(userAnswer, fullAnswer, marks) {
+            const apiKey = 'AIzaSyA_mVwJEp4TxAU5n7utscfSWbbIeu31TYg';
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
             const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer bc69519f39fc40e0be915a481831e817.L0AK4MgCiuWD39Ow'
+                'Content-Type': 'application/json'
             };
 
-            const body = JSON.stringify({
-                model: 'glm-4',
-                messages: [
-                    {
-                        role: 'user',
-                        content: `You are an IB Physics examiner. Compare the student's answer to the official answer and provide detailed feedback.
+            const prompt = `You are an IB Physics examiner. Compare the student's answer to the official answer and provide detailed feedback.
 
 Student's Answer:
 ${userAnswer}
@@ -855,7 +850,16 @@ Provide:
 3. What was missing or incorrect
 4. Suggestions for improvement
 
-Be fair but rigorous in your grading, following IB marking criteria.`
+Be fair but rigorous in your grading, following IB marking criteria.`;
+
+            const body = JSON.stringify({
+                contents: [
+                    {
+                        parts: [
+                            {
+                                text: prompt
+                            }
+                        ]
                     }
                 ]
             });
@@ -867,14 +871,18 @@ Be fair but rigorous in your grading, following IB marking criteria.`
             });
 
             if (!response.ok) {
-                throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                const errorText = await response.text();
+                throw new Error(`API request failed: ${response.status} ${response.statusText} - ${errorText}`);
             }
 
             const data = await response.json();
 
-            // Extract the assistant's message from the response
-            if (data.choices && data.choices.length > 0) {
-                return data.choices[0].message.content;
+            // Extract the generated text from the Gemini response
+            if (data.candidates && data.candidates.length > 0 &&
+                data.candidates[0].content &&
+                data.candidates[0].content.parts &&
+                data.candidates[0].content.parts.length > 0) {
+                return data.candidates[0].content.parts[0].text;
             } else {
                 throw new Error('No response from AI');
             }
