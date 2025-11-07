@@ -619,11 +619,12 @@
         // ====================================================================
         function displayMultipleChoice(question) {
             answerArea.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
 
             question.options.forEach((option, index) => {
                 const button = document.createElement('button');
                 button.className = 'option-button';
-                button.textContent = option;
+                button.textContent = `${letters[index]}. ${option}`;
                 button.addEventListener('click', () => selectOption(button, option));
                 answerArea.appendChild(button);
             });
@@ -740,16 +741,23 @@
         // ====================================================================
         function gradeMultipleChoice(question, userAnswer) {
             const isCorrect = userAnswer === question.answer;
+            const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+            // Find which letter corresponds to each answer
+            const userAnswerIndex = question.options.indexOf(userAnswer);
+            const correctAnswerIndex = question.options.indexOf(question.answer);
+            const userAnswerLetter = userAnswerIndex !== -1 ? letters[userAnswerIndex] : '?';
+            const correctAnswerLetter = correctAnswerIndex !== -1 ? letters[correctAnswerIndex] : '?';
 
             // Flash main content area
             if (isCorrect) {
                 mainContent.classList.add('flash-correct');
                 feedbackArea.className = 'feedback-area show correct';
-                feedbackTitle.textContent = '✓ Correct!';
+                feedbackTitle.textContent = `✓ Correct! You selected ${userAnswerLetter}`;
             } else {
                 mainContent.classList.add('flash-incorrect');
                 feedbackArea.className = 'feedback-area show incorrect';
-                feedbackTitle.textContent = '✗ Incorrect';
+                feedbackTitle.textContent = `✗ Incorrect - You selected ${userAnswerLetter}, correct answer is ${correctAnswerLetter}`;
             }
 
             // Remove flash animation after it completes
