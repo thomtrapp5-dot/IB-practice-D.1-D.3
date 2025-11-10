@@ -476,167 +476,2618 @@
         //
         // IMPORTANT: Only add questions from D.1, D.2, and D.3 topics.
         // Do NOT include D.4 questions as they are not covered in this app.
+        //
+        // All 193 questions loaded from markdown files (139 Multiple Choice + 54 Paper 2)
 
-        // Questions will be loaded from markdown files
-        let questions = [];
-
-        // ====================================================================
-        // LOAD QUESTIONS FROM MARKDOWN FILES
-        // ====================================================================
-        async function loadQuestionsFromMarkdown() {
-            try {
-                // Load Multiple Choice questions
-                const mcResponse = await fetch('Topic D multiple choice.md');
-                const mcText = await mcResponse.text();
-                const mcQuestions = parseMultipleChoiceQuestions(mcText);
-
-                // Load Paper 2 questions
-                const paper2Response = await fetch('Topic D paper 2.md');
-                const paper2Text = await paper2Response.text();
-                const paper2Questions = parsePaper2Questions(paper2Text);
-
-                // Combine all questions
-                questions = [...mcQuestions, ...paper2Questions];
-
-                console.log(`Loaded ${mcQuestions.length} multiple choice questions`);
-                console.log(`Loaded ${paper2Questions.length} Paper 2 questions`);
-                console.log(`Total: ${questions.length} questions`);
-
-                return questions;
-            } catch (error) {
-                console.error('Error loading questions:', error);
-                alert('Failed to load questions. Please make sure the markdown files are in the same directory.');
-                return [];
-            }
-        }
-
-        // ====================================================================
-        // PARSE MULTIPLE CHOICE QUESTIONS FROM MARKDOWN
-        // ====================================================================
-        function parseMultipleChoiceQuestions(text) {
-            const questions = [];
-            const lines = text.split('\n');
-            let currentQuestion = null;
-            let questionText = '';
-            let options = [];
-            let collectingOptions = false;
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-
-                // Check if line starts with a number (question number)
-                const questionMatch = line.match(/^(\d+)\s+(.+)/);
-
-                if (questionMatch && !line.match(/^(\d+)\s*$/)) {
-                    // Save previous question if exists
-                    if (currentQuestion !== null && questionText) {
-                        questions.push({
-                            id: currentQuestion,
-                            topic: detectTopic(questionText),
-                            type: 'mc',
-                            text: questionText.trim(),
-                            marks: 1,
-                            options: options.length > 0 ? options : ['A', 'B', 'C', 'D'],
-                            answer: options.length > 0 ? options[0] : 'A',
-                            fullAnswer: 'Multiple choice question. Select the correct answer.'
-                        });
-                    }
-
-                    // Start new question
-                    currentQuestion = parseInt(questionMatch[1]);
-                    questionText = questionMatch[2];
-                    options = [];
-                    collectingOptions = true;
-                } else if (line.match(/^[A-D]\s+/) && collectingOptions) {
-                    // Collect option
-                    options.push(line.substring(2).trim());
-                } else if (currentQuestion !== null && line) {
-                    // Continue building current question
-                    questionText += '\n' + line;
-                }
-            }
-
-            // Add last question
-            if (currentQuestion !== null && questionText) {
-                questions.push({
-                    id: currentQuestion + 1000, // Offset to avoid ID conflicts
-                    topic: detectTopic(questionText),
-                    type: 'mc',
-                    text: questionText.trim(),
-                    marks: 1,
-                    options: options.length > 0 ? options : ['A', 'B', 'C', 'D'],
-                    answer: options.length > 0 ? options[0] : 'A',
-                    fullAnswer: 'Multiple choice question. Select the correct answer.'
-                });
-            }
-
-            return questions;
-        }
-
-        // ====================================================================
-        // PARSE PAPER 2 QUESTIONS FROM MARKDOWN
-        // ====================================================================
-        function parsePaper2Questions(text) {
-            const questions = [];
-            // Split by question numbers
-            const questionMatches = text.split(/####\s+(\d+)\./);
-
-            // Process in pairs (question number, question content)
-            for (let i = 1; i < questionMatches.length; i += 2) {
-                const questionNumber = questionMatches[i];
-                const questionContent = questionMatches[i + 1];
-
-                if (questionContent && questionContent.trim()) {
-                    // Split question from answer
-                    const parts = questionContent.split(/Question \d+ Answers/);
-                    const questionText = parts[0] ? parts[0].trim() : '';
-                    const answerText = parts[1] ? parts[1].trim() : '';
-
-                    if (questionText) {
-                        // Extract marks (look for [X] pattern)
-                        const marksMatch = questionText.match(/\[(\d+)\]/);
-                        const marks = marksMatch ? parseInt(marksMatch[1]) : 3;
-
-                        questions.push({
-                            id: parseInt(questionNumber),
-                            topic: detectTopic(questionText),
-                            type: 'fr',
-                            text: questionText,
-                            marks: marks,
-                            options: null,
-                            answer: null,
-                            fullAnswer: answerText || 'See marking scheme for full answer.'
-                        });
-                    }
-                }
-            }
-
-            return questions;
-        }
-
-        // ====================================================================
-        // DETECT TOPIC FROM QUESTION TEXT
-        // ====================================================================
-        function detectTopic(text) {
-            const lowerText = text.toLowerCase();
-
-            if (lowerText.includes('gravit') || lowerText.includes('orbit') ||
-                lowerText.includes('kepler') || lowerText.includes('planet') ||
-                lowerText.includes('satellite') || lowerText.includes('escape')) {
-                return 'D.1';
-            }
-            if (lowerText.includes('electric') || lowerText.includes('charge') ||
-                lowerText.includes('potential') || lowerText.includes('coulomb')) {
-                return 'D.2';
-            }
-            if (lowerText.includes('magnetic') || lowerText.includes('flux') ||
-                lowerText.includes('induc') || lowerText.includes('emf') ||
-                lowerText.includes('faraday') || lowerText.includes('current')) {
-                return 'D.3';
-            }
-
-            return 'D.1'; // Default
-        }
+        const questions = [
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "The gravitational force between two point masses is _F_. What is the force when both masses are doubled and\ntheir separation halved?",
+        "marks": 1,
+        "options": [
+            "_F_",
+            "4 _F_",
+            "8 _F_",
+            "16 _F_"
+        ],
+        "answer": "_F_",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "Two identical solid steel spheres touch. The gravitational force between them is _F_. The spheres are replaced\nby two touching solid steel spheres of double the radius. What is the force between the spheres now?",
+        "marks": 1,
+        "options": [
+            "_F_ __ 4",
+            "__ 16 _F_",
+            "4 _F_",
+            "16 _F_"
+        ],
+        "answer": "_F_ __ 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1003,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "Two particles of masses _m_ 1 and _m_ 2 are a distance _d_ apart.\n```\nThe gravitational field strength on the line joining the particles at a distance of 0.4 d from m 1 is zero.\nWhat is the ratio __^ m m^1  2?\n```",
+        "marks": 1,
+        "options": [
+            "2 __ 3",
+            "4 __ 9",
+            "2 __ 5",
+            "3 __ 5"
+        ],
+        "answer": "2 __ 3",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1004,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "The gravitational field strength on the surface of Earth is _g_. A planet has double the mass and double the\nradius of Earth. What is the gravitational field strength on the surface of the planet?\n```\nm 1 m 2\n```\n```\n0.4 d\n```",
+        "marks": 1,
+        "options": [
+            "_g_ __ 4",
+            "_g_ __ 2",
+            "_g_",
+            "2 _g_"
+        ],
+        "answer": "_g_ __ 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1005,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet has four times the mass of the Earth, but the acceleration of gravity on the surface is the same as\nthat on Earth. What is the radius of the planet in terms of the Earth radius _R_?",
+        "marks": 1,
+        "options": [
+            "_R_ __ 4",
+            "_R_ __ 2",
+            "2 _R_",
+            "4 _R_"
+        ],
+        "answer": "_R_ __ 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1006,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A satellite is in a circular orbit around a planet. The orbit radius is 5000 km, and the speed of the satellite is\n2.0 km s−1. What is the gravitational field strength at the position of the satellite?",
+        "marks": 1,
+        "options": [
+            "0.8 N kg −",
+            "4.0 N kg −",
+            "8.0 N kg −",
+            "Cannot be determined without knowing the mass of the planet."
+        ],
+        "answer": "0.8 N kg −",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1007,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "The mass of a landing module on the Moon is 2000 kg. The gravitational field strength on the Moon is one-\nsixth that on Earth. What is the weight of the landing module on Earth?",
+        "marks": 1,
+        "options": [
+            "330 N",
+            "2000 N",
+            "12 000 N",
+            "20 000 N"
+        ],
+        "answer": "330 N",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1008,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet has double the radius of Earth and half its density. What is the gravitational field strength on the\nsurface of this planet?",
+        "marks": 1,
+        "options": [
+            "5.0 N kg−",
+            "10 N kg−",
+            "20 N kg−",
+            "40 N kg−"
+        ],
+        "answer": "5.0 N kg−",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1009,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet has radius _R_. The gravitational field strength at a height _R_ from the surface is _g_.\nWhat is the gravitational field strength at a point whose height from the planet’s surface is 2 _R_?",
+        "marks": 1,
+        "options": [
+            "_g_ __ 4",
+            "4 __ 9 _g_",
+            "_g_ __ 2",
+            "2 __ 3 _g_"
+        ],
+        "answer": "_g_ __ 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1010,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A satellite orbits the Earth in a circular orbit. The only force on the satellite is the gravitational force from\nthe Earth. Which of the following is correct about the acceleration of the satellite?",
+        "marks": 1,
+        "options": [
+            "It is zero.",
+            "It is constant in magnitude and direction.",
+            "It is constant in magnitude but not in direction.",
+            "It is not constant in magnitude or direction."
+        ],
+        "answer": "It is zero.",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1011,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A satellite is in a circular orbit around the Earth. The satellite enters an orbit further away from the surface.\nWhat change took place?",
+        "marks": 1,
+        "options": [
+            "The satellite’s speed decreased.",
+            "The satellite’s speed increased.",
+            "The satellite’s mass decreased.",
+            "The satellite’s mass increased."
+        ],
+        "answer": "The satellite’s speed decreased.",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1012,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "Two stars, X and Y, orbit a common centre. X and Y are always diametrically opposite each other. X has an\norbit radius _R_ and Y an orbit radius 2 _R_. The period of revolution of X is _T_ and its speed is _v_.\n```\nWhat are the period and speed of Y?\n```\n```\nPeriod of Y Speed of Y\n```",
+        "marks": 1,
+        "options": [
+            "T v",
+            "T 2 v",
+            "2 T v",
+            "2 T 2 v"
+        ],
+        "answer": "T v",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1013,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "Two satellites, X and Y, orbit a planet in circular orbits of radius _R_ and 2 _R_.\n```\nWhat is the ratio of their speeds and the ratio of their accelerations?\n```\nv__ v^ X (^) Y a__ a^ X (^) Y^\n__",
+        "marks": 1,
+        "options": [
+            "√"
+        ],
+        "answer": "√",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n__",
+        "marks": 1,
+        "options": [
+            "√"
+        ],
+        "answer": "√",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "4\nC^ ___ √^1 __^2\nD^ ___ √^1 __^2\nX _R_^2 _R_ Y\nY\nX\n_R_",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "_R_",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1014,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "The two spherical bodies in the diagram have the same radius. The sphere on the left has twice the mass of\nthe sphere on the right. At which point, A, B, C or D, does the net gravitational field strength of the two\nmasses have the greatest magnitude? A, B, C and D are points on the surfaces of the spheres as shown.",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1015,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "Which of Kepler’s laws of planetary motion can be derived from Newtonian mechanics?",
+        "marks": 1,
+        "options": [
+            "f irst",
+            "second",
+            "third",
+            "all three."
+        ],
+        "answer": "f irst",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1016,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet moves anticlockwise around the Sun in an elliptical orbit.\n```\nWhich diagram shows the net force (arrow x ) and velocity (arrow y ) of the planet?\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "M\n```\n```\nM\n```\n### A B\n### C\n```\nx x\n```\n```\nx\n```\n```\ny\n```\n```\nx\n```\n```\ny\n```\n```\ny\n```\n```\ny\n```\n### D",
+        "marks": 1,
+        "options": [
+            "B",
+            "D"
+        ],
+        "answer": "B",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1017,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet is in an elliptical orbit around the Sun. At which point in the orbit is the acceleration of the planet\nthe largest?",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1018,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet is in an elliptical orbit around a star.\n```\nWhich graph shows the variation with distance from the star of the force experienced by the planet as the\nplanet moves from P to A?\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1019,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet of mass _M_ orbits a star in a circular orbit of radius _R_. The period of revolution is _T_. A second\nplanet of mass 2 _M_ orbits the same star in a circular orbit of radius 4 _R_. What is the period of revolution\nof the second planet?",
+        "marks": 1,
+        "options": [
+            "2 _T_",
+            "4 _T_",
+            "8 _T_",
+            "16 _T_"
+        ],
+        "answer": "2 _T_",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1020,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet orbits a star in a circular orbit of radius _R_. The period of revolution is _T_. A second planet orbits\nthe same star in a circular orbit with period of revolution 27 _T_. What is the radius of the orbit of the\nsecond planet?\n```\nSun\n```\n```\n```\n```\nB\n```\n```\nD\n```\n```\nstar\n```\n```\nP A\n```\n### A B C D\n```\nr r r r\n```\n```\nF F F F\n```",
+        "marks": 1,
+        "options": [
+            "_R_ __ 3",
+            "3 _R_",
+            "9 _R_",
+            "81 _R_",
+            "C"
+        ],
+        "answer": "_R_ __ 3",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1021,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet has double the mass of the Earth and double the radius. The gravitational potential at the surface\nof the Earth is _V_ and the magnitude of the gravitational field strength is _g_. The gravitational potential and\ngravitational field strength on the surface of the planet are:\n```\nPotential Field\n```\n```\n```\n```\n```\n```\n```",
+        "marks": 1,
+        "options": [
+            "V __ g 4",
+            "V __ g 2",
+            "2 V __ g 2",
+            "2 V __ g 4"
+        ],
+        "answer": "V __ g 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1022,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "Two uniform spheres, each of mass _M_ , have their centres a distance _d_ apart. Which of the following is true\nat the point midway on the line joining the two centres?\n```\nPotential Gravitational field strength\n```",
+        "marks": 1,
+        "options": [
+            "Non-zero Zero",
+            "Non-zero Non-zero",
+            "Zero Zero",
+            "Zero Non-zero"
+        ],
+        "answer": "Non-zero Zero",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1023,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A probe of mass _m_ is in a circular orbit of radius _r_ around a planet of mass _M_. The probe is moved to a\nhigher circular orbit of orbit radius 2 _r_. What is the work done on the probe?",
+        "marks": 1,
+        "options": [
+            "− _____ _GMm_ 2 _r_",
+            "_GMm_ _____ 2 _r_",
+            "− _____ _GMm_ 4 _r_",
+            "_GMm_ _____ 4 _r_"
+        ],
+        "answer": "− _____ _GMm_ 2 _r_",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1024,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "Four identical satellites orbit four planets. The mass of each planet and the orbit radius of the satellite are\nshown. Which satellite has the least total energy?\n### A B C D\n```\nM 2 M\n```\n## R\n```\nM 2 M\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "R\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1025,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "Three identical spheres each of mass _M_ are at the vertices of an equilateral triangle of side _d_.\n```\nWhat is the gravitational potential energy of this arrangement?\n```",
+        "marks": 1,
+        "options": [
+            "− ____^ GMd^2",
+            "− _____^3 GMd^2",
+            "− ____ GMd",
+            "− ____^3 GMd"
+        ],
+        "answer": "− ____^ GMd^2",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1026,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A satellite in a low circular orbit experiences a small frictional force. What is the effect of this force on the\nkinetic energy and the period of revolution of the satellite?\n```\nKinetic energy Period\n```",
+        "marks": 1,
+        "options": [
+            "Decreases Decreases",
+            "Decreases Increases",
+            "Increases Decreases",
+            "Increases Increases"
+        ],
+        "answer": "Decreases Decreases",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1027,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A planet without an atmosphere has mass _M_ and radius _R_. An object is released from rest at a height _R_\nabove the surface of a planet. What is the speed with which the object impacts the surface of the planet?\n____\n____ _GM_ 2 _R_\n____\n____ _GMR_\n_____\n____^2 _GMR_\n____\n____ _GMR_",
+        "marks": 1,
+        "options": [
+            "(^) √",
+            "(^) √",
+            "(^) √",
+            "(^2) √"
+        ],
+        "answer": "(^) √",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1028,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A probe of mass _m_ is launched from the surface of a planet without an atmosphere of mass _M_ and radius _R_\nwith kinetic energy^3 ______ _GMm_ 5 _R_. What is the maximum **height above the surface** of the planet that this probe\nwill reach?",
+        "marks": 1,
+        "options": [
+            "2 ___ 5 _R_",
+            "7 ___ 5 _R_",
+            "3 ___ 2 _R_",
+            "5 ___ 2 _R_"
+        ],
+        "answer": "2 ___ 5 _R_",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1029,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A probe of mass _m_ is launched from the surface of a planet without an atmosphere of mass _M_ and radius\n_R_ with kinetic energy^4 ______ _GMm_ 5 _R_. The probe settles into a circular orbit around the planet. What is the radius of\nthe orbit?",
+        "marks": 1,
+        "options": [
+            "5 ___ 4 _R_",
+            "3 ___ 2 _R_",
+            "5 ___ 2 _R_",
+            "5 _R_"
+        ],
+        "answer": "5 ___ 4 _R_",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1030,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "The escape speed from the surface of Earth is _v_ esc. What is the escape speed from the surface of a planet\nwithout an atmosphere whose mass and radius are both double those of the Earth?",
+        "marks": 1,
+        "options": [
+            "_v_ (^) esc",
+            "2 _v_ (^) esc",
+            "4 _v_ (^) esc",
+            "8 _v_ (^) esc"
+        ],
+        "answer": "_v_ (^) esc",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1031,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "The escape speed from the surface of Earth is _v_ esc. What is the escape speed from the surface of a planet\nwithout an atmosphere whose density and radius are both double those of the Earth?\n__\n2\n__\n8",
+        "marks": 1,
+        "options": [
+            "_v_ (^) esc √",
+            "_v_ (^) esc √",
+            "4 _v_ (^) esc",
+            "8 _v_ (^) esc"
+        ],
+        "answer": "_v_ (^) esc √",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1032,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A probe of mass _m_ is launched from the surface of a planet of radius _R_. The gravitational field strength at\nthe surface of the planet is _g_. What is the minimum kinetic energy at launch so that the probe escapes?",
+        "marks": 1,
+        "options": [
+            "_mgR_ ____ 4",
+            "_mgR_ ____ 2",
+            "_mgR_",
+            "2 _mgR_"
+        ],
+        "answer": "_mgR_ ____ 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1033,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Two identical point particles have mass _m_ and charge _q_. They are separated by a distance _d_. The electric\nforce between them is _F_. What is the electric force between the particles if their mass, charge and separation\nare all doubled?",
+        "marks": 1,
+        "options": [
+            "_F_ __ 4",
+            "_F_ __ 2",
+            "_F_",
+            "2 _F_"
+        ],
+        "answer": "_F_ __ 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1034,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "The electric force between two particles X and Y each of charge _q_ is _F_. The charge on particle X is doubled,\nand the separation of the charges is halved. What is the electric force on X and Y?\nForce on X Force on Y",
+        "marks": 1,
+        "options": [
+            "4 _F_ 4 _F_",
+            "4 _F_ 8 _F_",
+            "8 _F_ 4 _F_",
+            "8 _F_ 8 _F_"
+        ],
+        "answer": "4 _F_ 4 _F_",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1035,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "X and Y are two identical conducting spheres. X has charge _Q_ , and Y is initially uncharged. Y is grounded\nand is then allowed to touch X. The ground is removed, and the spheres are separated. What is the charge\non each sphere?\nCharge on X Charge on Y\nB^ __ _Q_ 2 __Q 2",
+        "marks": 1,
+        "options": [
+            "0 0",
+            "_Q_ 0",
+            "0 _Q_"
+        ],
+        "answer": "0 0",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1036,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "An electroscope is positively charged. The angle between the leaves is _φ_. A positively charged rod is placed\nclose to the electroscope.\n```\nWhat will happen to φ?\n```",
+        "marks": 1,
+        "options": [
+            "It will become zero.",
+            "It will decrease but stay non-zero.",
+            "It will increase.",
+            "It will stay the same."
+        ],
+        "answer": "It will become zero.",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1037,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A negatively charged rod is placed close to a conducting body X that is initially uncharged.\nThe body is then grounded briefly, and the ground is then removed.\n```\nThe rod is then also removed. Which is correct for the body?\n```",
+        "marks": 1,
+        "options": [
+            "No part of the body has a net charge.",
+            "The left end of the body has a positive charge and the right end an equal negative charge.",
+            "The body is negatively charged.",
+            "The body is positively charged."
+        ],
+        "answer": "No part of the body has a net charge.",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1038,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "X and Y are two identical conducting spheres with their centres a distance _d_ apart. X has charge _Q_ and\nY has charge 2 _Q_. The force between them is _F_. The spheres touch and are then moved to their original\nseparation. What is the force between the spheres now?\n```\n1\n1",
+        "marks": 1,
+        "options": [
+            "0",
+            "3 __ 4 _F_",
+            "9 __ 8 _F_",
+            "9 __ 4 _F_"
+        ],
+        "answer": "0",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "1\nw\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1011,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "11111\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 23222,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "X\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1039,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A small charge _q_ is placed near a large spherical charge _Q_. The force experienced by both charges is _F_.\nThe electric field created by _Q_ at the position of _q_ is\n```\n```\n```\n```\n```\n```\n```\n```",
+        "marks": 1,
+        "options": [
+            "__ QF",
+            "F __ q",
+            "___ QqF",
+            "FQ ___ q"
+        ],
+        "answer": "__ QF",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1040,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A positive charge _q_ is placed half-way between two long parallel plates that are separated by a distance 2 _d_.\nThe charge on one of the plates is _Q_ and the charge on the other plate is – _Q_. The potential difference\nbetween the plates is _V_. What is the magnitude of the force on the charge _q_?\n```\n```\n```\n```\n```\n```\n```\n```",
+        "marks": 1,
+        "options": [
+            "k Qq ___ d 2",
+            "k 2 ____ Qq d 2",
+            "qV ___ 2 d",
+            "qV ___ d"
+        ],
+        "answer": "k Qq ___ d 2",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1041,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "The electric field strength at the surface of a sphere of charge _Q_ and radius _R_ is _E_. Another sphere has\ncharge 2 _Q_ and radius 2 _R_. What is the electric field strength at the surface of this sphere?\n```\n```",
+        "marks": 1,
+        "options": [
+            "2 _E_",
+            "_E_",
+            "_E_ __ 2",
+            "E __ 4"
+        ],
+        "answer": "2 _E_",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1042,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A spherical conductor of radius _R_ is positively charged. Which graph shows how the electric field strength\n_E_ varies with distance _r_ from the centre of the conductor?\n```\n```\n### C D\n```\nE\n```\n```",
+        "marks": 1,
+        "options": [
+            "B"
+        ],
+        "answer": "B",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1000,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "R r 0 R r\n```\n```\nE\n```\n```\nE\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1000,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "R r 0 R r\n```\n```\nE\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1043,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "The diagram shows two oppositely charged parallel plates a distance _d_ apart.\n```\nrepresents the variation of the speed v of the proton with distance x from the negative plate?\n```",
+        "marks": 1,
+        "options": [
+            "proton is launched from the negative plate. The proton just reaches the positive plate. Which graph"
+        ],
+        "answer": "proton is launched from the negative plate. The proton just reaches the positive plate. Which graph",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1044,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "An amount of positive charge _Q_ is placed uniformly on a large plane surface. A small positive point charge\n_q_ placed a perpendicular distance _r_ from the surface experiences a force _F_.\n```\nWhat is the magnitude of the electric field at the position of the small charge q?\n```\n```",
+        "marks": 1,
+        "options": [
+            "kQ ___ r 2",
+            "kq __ r 2",
+            "__ QF",
+            "F __ q"
+        ],
+        "answer": "kQ ___ r 2",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2 2 2 2 2 2",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "1 1 1 1 1 1 v x x\n```\n```\nx\n```\n```\nx\n```\n```\nd d\n```\n```\nd d\n```\n```\nv\n```\n```\nv v\n```\n### A B\n### C D\n```\nq\n```\n```\nr\n++++\n```\n```\n+\n```\n```\n+++++\n+++++++++\n+++++++++\n+++++++++\n+++++++++\n```\n```\nQ\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1045,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A point charge _q_ is placed near a neutral conducting sphere. What is correct about the electric force between\nthe point charge and the sphere?",
+        "marks": 1,
+        "options": [
+            "The force is zero.",
+            "The force is always attractive.",
+            "The force is always repulsive.",
+            "The force is attractive or repulsive depending on the sign of _q_."
+        ],
+        "answer": "The force is zero.",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1046,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Where does a non-zero electric field exist?",
+        "marks": 1,
+        "options": [
+            "near the north pole of a bar magnet",
+            "near a wire carrying a constant current",
+            "outside two infinitely long, oppositely charged, parallel plates",
+            "near a point electric charge."
+        ],
+        "answer": "near the north pole of a bar magnet",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1047,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Two charged particles are released from rest from the middle of two parallel, oppositely charged plates.\n```\nThe particles reach the right plate in the same time. It may be deduced that the particles have the same\n```",
+        "marks": 1,
+        "options": [
+            "charge",
+            "mass",
+            "charge to mass ratio",
+            "charge and mass."
+        ],
+        "answer": "charge",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1048,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A charged particle is placed at the middle of two parallel, oppositely charged plates.\n```\nThe electric force on the particle is F. The charge on the particle is doubled, and the separation of the plates\nis halved. What is the electric force on the particle?\n```",
+        "marks": 1,
+        "options": [
+            "F __ 4",
+            "F",
+            "2 F",
+            "4 F"
+        ],
+        "answer": "F __ 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1049,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Two charged particles are fixed as shown. Their charges are 2 _q_ and − _q._ In which regions can the electric field\nstrength due to the two particles be zero?\n```\n```",
+        "marks": 1,
+        "options": [
+            "I only",
+            "II only",
+            "III only",
+            "I and III."
+        ],
+        "answer": "I only",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1050,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Two charged particles are fixed as shown. Their charges are 2 _q_ and − _q._ In which regions can we find points\nwhere the electric field strength is directed to the left?\n```\n```",
+        "marks": 1,
+        "options": [
+            "I only",
+            "II only",
+            "III only",
+            "I and III."
+        ],
+        "answer": "I only",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1051,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Two positively charged particles of charges _q_ 1 and _q_ 2 are a distance _d_ apart.\n```\nThe electric field on the line joining the particles at a distance of 0.8 d from q 1 is zero. What is the ratio^ q __ q^1  2?\n```",
+        "marks": 1,
+        "options": [
+            "2",
+            "4",
+            "16",
+            "32"
+        ],
+        "answer": "2",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1052,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Two oppositely charged plates are separated by a distance _d_.\n## I^2 q II – q III\n## I^2 q II – q III\n```\nq 1 q 2\n```\n```\n0.8 d\n```\n```\nd\n```\n```\nWhich graph shows the variation of the electric field strength in between the plates as d is varied?\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1053,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Two oppositely charged plates are separated by a distance _d_.\n```\nWhich graph shows the variation of the potential difference between the plates as d is varied?\n```\n### A E\n```\nd\n```\n### B E\n```\nd d\n```\n```\n```\n```\nd\n```\n```\nd\n```\n### A V\n```\nd\n```\n### B V\n```\nd\n```\n### C V\n```\nd\n```\n### D V\n```\nd\n```",
+        "marks": 1,
+        "options": [
+            "E D E"
+        ],
+        "answer": "E D E",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1054,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Two oppositely charged plates are separated by a distance _d_.\n```\nThe work done by the electric field to move a negative point charge from the negative to the positive plate is\nW. The time taken is T. The distance d is doubled. What is the work done in moving the same point charge\nfrom one plate to the other, and how long does this take?\n```\n```\nWork done Time taken\n```\n```\n__\n2\n```\n```\n__\n2\n```",
+        "marks": 1,
+        "options": [
+            "W T √",
+            "W 2 T",
+            "2 W T √",
+            "2 W 2 T"
+        ],
+        "answer": "W T √",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1055,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A particle of mass _m_ and charge _q_ is accelerated from rest by a potential difference _V_.\nWhat is the speed acquired by the particle?\n____\n____^2 _qVm_\n____\n____ 2 _mqV_",
+        "marks": 1,
+        "options": [
+            "(^) √",
+            "2 ____ _qVm_",
+            "(^) √",
+            "____ 2 _mqV_"
+        ],
+        "answer": "(^) √",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1056,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "Two charged particles X and Y are projected horizontally with the same speed from the same point in a\nuniform electric field. Gravity is not negligible.\nThe two particles follow identical paths. What conclusion about X and Y can one draw from this?\n_d_\nelectric field\npath followed by\nX and Y",
+        "marks": 1,
+        "options": [
+            "They have the same mass.",
+            "They have the same charge.",
+            "They have the same acceleration.",
+            "They have the same momentum."
+        ],
+        "answer": "They have the same mass.",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1057,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A positively charged particle is attached to a string and placed in a uniform horizontal electric field.\nThe particle is in equilibrium when the string makes an angle of 30 ° to the vertical.\n```\nThe string is cut. What is the path of the charged particle while it is in the electric field?\n```",
+        "marks": 1,
+        "options": [
+            "a parabolic path",
+            "a horizontal straight line",
+            "a vertical straight line",
+            "a straight line at 30 ° to the vertical."
+        ],
+        "answer": "a parabolic path",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1058,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A charged particle moves in a circle of radius _R_ in a uniform magnetic field. The magnetic field is at right\nangles to the velocity of the particle and exerts a force _F_ on the particle. After half a revolution the change\nin the particle’s kinetic energy is",
+        "marks": 1,
+        "options": [
+            "0",
+            "π _RF_",
+            "2π _RF_",
+            "_RF_"
+        ],
+        "answer": "0",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1059,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A negatively charged particle is at rest in a magnetic field _B_. The magnetic force on the particle is",
+        "marks": 1,
+        "options": [
+            "parallel to _B_",
+            "opposite to _B_",
+            "at right angles to _B_",
+            "zero."
+        ],
+        "answer": "parallel to _B_",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1060,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A charged particle moves in a circle in a magnetic field. The particle completes one revolution in time _T_.\nThe speed of the particle is doubled. What is the time for one revolution?\n```\nelectric field\n```\n```\n308\n```",
+        "marks": 1,
+        "options": [
+            "_T_ __ 4",
+            "_T_ __ 2",
+            "_T_",
+            "2 _T_"
+        ],
+        "answer": "_T_ __ 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1061,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "The diagram shows an electron moving in air in a magnetic field that is at right angles to the plane\nof the page.\n```\nWhat is the direction of motion of the electron and the direction of the magnetic field?\n```\n```\nField Magnetic field\n```",
+        "marks": 1,
+        "options": [
+            "Clockwise Into the page",
+            "Clockwise Out of the page",
+            "Anticlockwise Into the page",
+            "Anticlockwise Out of the page"
+        ],
+        "answer": "Clockwise Into the page",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1062,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "An electron enters a magnetic field. In which case is the initial force on the electron directed towards the\nbottom of the page?",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1063,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A length of wire carrying current _I_ is in a magnetic field of magnetic flux density _B_. The force on the\nwire is _F_. What is the force when the current is doubled and the magnetic flux density becomes __ _B_ 4?\n### A B C D",
+        "marks": 1,
+        "options": [
+            "F__ 4",
+            "_F_ __ 2",
+            "2 _F_",
+            "4 _F_"
+        ],
+        "answer": "F__ 4",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1064,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "Two long parallel wires carry equal currents in opposite directions. What field do the two wires produce at\npoint M, which is midway between the wires and on the plane of the paper?\n```\n```",
+        "marks": 1,
+        "options": [
+            "a magnetic field parallel to the wires",
+            "an electric field parallel to the wires",
+            "a magnetic field at right angles to the plane of the paper",
+            "an electric field at right angles to the plane of the paper."
+        ],
+        "answer": "a magnetic field parallel to the wires",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1065,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "An alpha particle, a proton, a neutron and an electron move at the same speed at right angles to a magnetic\nfield. Which particle experiences the least magnetic force?",
+        "marks": 1,
+        "options": [
+            "the alpha particle",
+            "the proton",
+            "the neutron",
+            "the electron."
+        ],
+        "answer": "the alpha particle",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1066,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A loop of wire on the plane of the page carries a clockwise current.\n```\nThe magnetic field created by this current at the centre of the loop is\n```",
+        "marks": 1,
+        "options": [
+            "zero",
+            "directed into the plane of the page",
+            "directed out of the plane of the page",
+            "directed towards the top of the page."
+        ],
+        "answer": "zero",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1067,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "The Tesla is equivalent to which combination of units?",
+        "marks": 1,
+        "options": [
+            "kg A −1 s −",
+            "kg m A −1 s −",
+            "kg A −1 s −",
+            "kg m A −1 s −"
+        ],
+        "answer": "kg A −1 s −",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1068,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "Two parallel wires carry currents in opposite directions. The force per unit length on each wire is _f_.\n```\nM\n```\n```\nThe currents and the separation of the wires are all doubled. What is the force per unit length on the wires?\n```",
+        "marks": 1,
+        "options": [
+            "f",
+            "2 f",
+            "__ 2 f",
+            "__ 4 f"
+        ],
+        "answer": "f",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1069,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "An electron moves near a bar magnet as shown.\nWhat is the direction of the magnetic force on the electron?",
+        "marks": 1,
+        "options": [
+            "towards the top of the page",
+            "towards the bottom of the page",
+            "into the page",
+            "out of the page."
+        ],
+        "answer": "towards the top of the page",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1070,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "Two parallel wires carry the same current into the plane of the page. Point P is equidistant from the wires.\nWhat is the direction of the magnetic flux density at P?",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1071,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "Four parallel and equidistant wires, P, Q, R and S, carry equal currents into the page.\n```\nThe force per unit length P exerts on Q is f. What is the net force per unit length on R?\n```\n```\nMagnitude Direction\n```\n```\n```\n```\n```\n```\n```\n```\nS N\n```\n```\n```\n```\nB\n```\n```\nD\n```\n```\nP\n```\n```\nP Q R S\n```",
+        "marks": 1,
+        "options": [
+            "__ 2 f Left",
+            "__ 2 f Right",
+            "f Left",
+            "f Right",
+            "C"
+        ],
+        "answer": "__ 2 f Left",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1072,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "Two parallel wires carry the same current into the plane of the page. A proton has constant speed and can\nbe placed anywhere on the dotted line from X to Y.\n```\nWhich graph best represents the variation of the magnitude of the magnetic force exerted on the proton with\nposition x from point M?\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1073,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "The north pole of a bar magnet attracts each end of a metal cylinder. What can be concluded about the\ncylinder from this observation?\n```\nY\n```\n```\nM\n```\n```\nX\n```\n```\nX Y\n```\n### A F\n```\nX Y\n```\n### B F\n```\nX Y\n```\n### D F\n```\nX Y\n```\n### C F",
+        "marks": 1,
+        "options": [
+            "It is a bar magnet with two south poles.",
+            "It is a bar magnet with two north poles.",
+            "It is a bar magnet with one south and one north pole.",
+            "It is made from a material that can be magnetized."
+        ],
+        "answer": "It is a bar magnet with two south poles.",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1074,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A charged particle moves in a field. The force on the particle due to the field is opposite to the field.\nWhat is correct about the nature of the field and the sign of the charge on the particle?\n```\nField Charge\n```",
+        "marks": 1,
+        "options": [
+            "Electric Positive",
+            "Electric Negative",
+            "Magnetic Positive",
+            "Magnetic Negative"
+        ],
+        "answer": "Electric Positive",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1075,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "An electron enters an electric field of electric field strength _E_ , with an initial velocity _v_ that is\nnormal to the field.\n```\nWhat is the magnitude and direction of a magnetic field that will allow the electron to continue through the\nelectric field undeflected?\n```\n```\nMagnitude Direction\n```\n```\n```\n```\n```\n```\n```",
+        "marks": 1,
+        "options": [
+            "vE Into the plane of the page",
+            "vE Out of the plane of the page",
+            "__ Ev Into the plane of the page",
+            "__ Ev Out of the plane of the page"
+        ],
+        "answer": "vE Into the plane of the page",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1076,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A proton, of speed _v_ , enters a region of electric and magnetic fields at right angles to each other.\nThe direction of the magnetic field is out of the page.\n```\nThe proton is not deflected.\nAn alpha particle and an electron enter the same region with the same speed v.\nWhat is correct about the path of the alpha particle and the path of the electron?\n```\n```\nAlpha particle Electron\n```\n```\nE field\n```\n```\n```\n```\nE field\n```",
+        "marks": 1,
+        "options": [
+            "Deflected Deflected",
+            "Deflected Undeflected",
+            "Undeflected Deflected",
+            "Undeflected Undeflected",
+            "field"
+        ],
+        "answer": "Deflected Deflected",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1077,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "A charged particle X is projected horizontally from a point in a vertical electric field. The particle follows a\nparabolic path. A second particle Y is projected with the same speed and follows a horizontal straight line\npath. For both particles, gravity is **not** negligible.\n```\nWhat is correct for particle Y?\n```",
+        "marks": 1,
+        "options": [
+            "It is electrically neutral.",
+            "It is positively charged.",
+            "It is more massive than X.",
+            "The electric force is cancelled by the weight."
+        ],
+        "answer": "It is electrically neutral.",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1078,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Four charges that are equal in magnitude are put at the vertices of a square, as shown in the diagram.\n```\nWhere is the electric potential zero?\n```",
+        "marks": 1,
+        "options": [
+            "at the origin only",
+            "along the x -axis",
+            "along the y -axis",
+            "along both axes."
+        ],
+        "answer": "at the origin only",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1079,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A negative charge is in a uniform electric field. In which direction should the charge be moved in order to\ndecrease its potential energy?",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1080,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A positively charged particle moves in a direction opposite to a uniform electric field.\n```\nelectric field\n```\n```\nX\n```\n```\nY\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "q 2 q\n```\n```\nx\n```\n```\ny\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "q 2 q\n```\n```\n```\n```\n```\n```\nD\n```\n```\nE field\n```\n```\nAs the particle moves to the left it experiences\n```",
+        "marks": 1,
+        "options": [
+            "C",
+            "E field",
+            "an increase in kinetic energy",
+            "an increase in potential energy",
+            "a decrease in the electric force",
+            "a decrease in the acceleration."
+        ],
+        "answer": "C",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1081,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "The diagram shows four arrangements of two positive point charges separated by various distances.\nWhich **two** arrangements result in the same electric potential energy?\n```\n```",
+        "marks": 1,
+        "options": [
+            "I and II",
+            "II and IV",
+            "III and IV",
+            "I and III."
+        ],
+        "answer": "I and II",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1082,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Sphere X has radius 10 cm and has charge 15 nC. Sphere Y, which is far from X, has radius 5.0 cm and is\nuncharged. The spheres are then joined by a conducting wire.\n```\nWhat is the charge on each sphere after the connection?\n```\n```\nX Y\n```",
+        "marks": 1,
+        "options": [
+            "12 nC 3.0 nC",
+            "3.0 nC 12 nC",
+            "10 nC 5.0 nC",
+            "5.0 nC 10 nC"
+        ],
+        "answer": "12 nC 3.0 nC",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1083,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Two charges, M and N, are separated by a certain distance.\n```\nq\nI\n```\n```\nq\nd\n```\n```\nq\nII\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "q\nd\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "q\nIII\n```\n```\nq",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "d\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "q\nIV\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1004,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "q",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "d\n```\n```\nX Y\n```\n```\nM\n```\n```\ndistance from charge M\nx\n```\n```\nN\n```\n```\nWhich graph shows the correct variation of the electric potential V e with distance x from the centre of\ncharge M for the case of two equal and opposite charges and M positive?\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1084,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "Each diagram shows two oppositely charged plates which are not parallel. Which diagram best shows the\nelectric field lines in between the plates?\n```\nVe\n```\n```\nx\n```\n### A\n### C\n### B\n### D\n```\nVe\n```\n```\nx\n```\n```\nVe\n```\n```\nx\n```\n```\nVe\n```\n```\nx\n```\n### A B\n### C D",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1085,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A positive point charge is released from rest on the surface of a positively charged sphere. Which graph\nshows the variation of the sphere of the acceleration of the point charge with distance from its centre?",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1086,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A positive point charge is released from rest on the surface of a positively charged sphere. Which graph\nshows the variation of the speed of the point charge with distance from the centre of the sphere?\n```\nacceleration\n```\n```\ndistance distance\n```\n```\ndistance distance\n```\n```\nacceleration\n```\n```\nacceleration\n```\n### A\n### C\n### B\n```\n```\n```\nspeed speed\n```\n```\nspeed\n```\n### A\n### C\n### B\n```\nDspeed\n```\n```\ndistance distance\n```\n```\ndistance distance\n```",
+        "marks": 1,
+        "options": [
+            "acceleration"
+        ],
+        "answer": "acceleration",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1087,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A negative point charge _q_ has kinetic energy _E_ k when far from a sphere of radius _R_. The sphere has a\nnegative charge _Q_. The point charge is directed towards the sphere and is brought to rest at a distance 2 _R_\nfrom the centre of the sphere.\n```\nWhat is the kinetic energy E k of point charge q?\n```",
+        "marks": 1,
+        "options": [
+            "_E_ (^) k = ____ _kQq R_ 2",
+            "_E_ (^) k = ____ _kQq_ 4 _R_ 2",
+            "_E_ (^) k = ____ _kQqR_",
+            "_E_ (^) k = ____ _kQq_ 2 _R_"
+        ],
+        "answer": "_E_ (^) k = ____ _kQq R_ 2",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1088,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "The graph shows the variation with time of the magnetic flux linkage in a loop.\nWhich graph shows the variation with time of the induced emf in the loop?",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "_R_\n**Q**\n_q_\ntime\nflux\nlinkage\n### A\n### C\n### B\n```\nDem f\n```\n```\ntime\n```\n```\nem f\n```\n```\ntim e\n```\n```\nem f\n```\n```\ntime\n```\n```\nem f\n```\n```\ntim e\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1089,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A square loop of area 0.20 m^2 has 50 turns of wire around it. The loop is at right angles to a uniform\nmagnetic field. The magnetic flux density is increasing at a rate of 0.04 T s−1.\n```\nWhat is the induced emf in the loop?\n```",
+        "marks": 1,
+        "options": [
+            "8.0 mV",
+            "400 mV",
+            "5.0 V",
+            "250 V"
+        ],
+        "answer": "8.0 mV",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1090,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A loop of dimensions _a_ × _b_ rotates in a magnetic field of magnetic flux density _H_ with angular speed _ω_\nabout the axis shown.\n```\nWhat is the induced emf between X and Y at the instant shown?\n```",
+        "marks": 1,
+        "options": [
+            "Hωa b",
+            "H _____ ω 2 ab",
+            "Hω a 2",
+            "Hω b 2"
+        ],
+        "answer": "Hωa b",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1091,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "Two identical conducting rings, X and Y, are dropped at the same time from the same height above the\nground. Ring Y passes through a horizontal magnetic field.\n```\nX\n```\n```\nb\n```\n```\na\n```\n```\nY\n```\n```\nv\n```\n```\nX Y\n```\n```\nWhich ring reaches the ground first?\n```\n```\nWhich arrives first Reasoning\nleaves so average speed is the same as X\nleaves so average speed is the same as X\n```",
+        "marks": 1,
+        "options": [
+            "X Y is decelerated by the magnetic field",
+            "Y Y is accelerated by the magnetic field",
+            "X and Y take the same time Y is decelerated as it enters the field and accelerated as it",
+            "X and Y take the same time Y is accelerated as it enters the field and decelerated as it"
+        ],
+        "answer": "X Y is decelerated by the magnetic field",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1092,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A magnetic field of uniformly increasing magnitude is directed into the plane of the page as shown.\n```\nWhich is correct about the direction and magnitude of the induced current in the wire?\n```\n```\nDirection Magnitude\n```",
+        "marks": 1,
+        "options": [
+            "conducting loop of wire is on the plane of the page.",
+            "Clockwise Constant",
+            "Anticlockwise Varying",
+            "Clockwise Varying",
+            "Anticlockwise Constant"
+        ],
+        "answer": "conducting loop of wire is on the plane of the page.",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1093,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A conducting loop of area _S_ is rotated by 360 ° about the axis shown in a time _T_.\nThe magnetic flux density is _H_.\n```\nWhat is the average emf induced in the loop during the time T?\n```",
+        "marks": 1,
+        "options": [
+            "zero",
+            "HS ___ T",
+            "2 ____ HST",
+            "4 ____ HST"
+        ],
+        "answer": "zero",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1094,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A loop of wire contains two identical light bulbs, L 1 and L 2. The region in the loop within the dotted line\ncontains a changing magnetic field whose direction is normal to the plane of the page. Both light bulbs are\nlit. A copper wire of negligible resistance is placed across the loop as shown in the diagram.\n```\nWhat will be the effect of this wire on the brightness of the light bulbs?\n```\n```\nL 1 L 2\n```",
+        "marks": 1,
+        "options": [
+            "Goes out Gets dimmer",
+            "Goes out Gets brighter",
+            "Gets brighter Goes out",
+            "Gets dimmer Goes out"
+        ],
+        "answer": "Goes out Gets dimmer",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1095,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A loop of wire of area _S_ finds itself in a magnetic field directed at right angles to the plane of the loop.\nThe magnetic flux density is _M_ and increases by Δ _M_ in time Δ _t_. The induced current in the loop depends on\nall of the following **except** one. Which one?",
+        "marks": 1,
+        "options": [
+            "_S_",
+            "_M_",
+            "Δ _M_",
+            "Δ _t_"
+        ],
+        "answer": "_S_",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1096,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A conducting loop of wire is in a region of magnetic field directed into the plane of the page.\nThe loop is rotated about axes I, II and III.\n```\nL 1\n```\n```\nL 2\n```\n```\nL 1\n```\n```\nL 2\n```\n```\nI II III\n```\n```\nIn which case or cases will there be an induced current in the loop?\n```",
+        "marks": 1,
+        "options": [
+            "I and II",
+            "I and III",
+            "II and III",
+            "I, II and III."
+        ],
+        "answer": "I and II",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1097,
+        "topic": "D.2",
+        "type": "mc",
+        "text": "A metal sheet is moved at constant speed in a magnetic field directed into the page.\n```\nWhich diagram shows the correct charge separation in the metal sheet?\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1098,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A coil carries current _I_. The coil is placed close to a second coil as shown.\n```\nThree states of the current are considered:\nI Current is constant.\nIi Current is increasing.\nIII Current is decreasing.\n```\n```\n2\n```\n```\n2\n```\n```\n2\n```\n```\n1\n```\n```\n1\n```\n```\n1\n```\n```\n2\n```\n```\n2\n```\n```\n2\n```\n```\n2\n```\n```\n2\n```\n```\n2\n```\n```\n1\n```\n```\n1\n```\n```\n1\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1002,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2 2\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "1 1 2 2 2\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "1 1\n```\n### A B\n### C D\n```\nl\n```\n```\nA\n```\n```\nFor which states of the current is a current registered in the ammeter?\n```",
+        "marks": 1,
+        "options": [
+            "I and II",
+            "I and III",
+            "II and III",
+            "I, II and III."
+        ],
+        "answer": "I and II",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1099,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "Two horizontal parallel loops of wire, X and Y, have a common axis as shown.\n```\nLoop X has a current that is clockwise when viewed from above. The current is decreasing.\nWhat is correct about the induced current in loop Y and the force between X and Y?\n```\n```\nCurrent in Y Force\n```",
+        "marks": 1,
+        "options": [
+            "Clockwise Attractive",
+            "Clockwise Repulsive",
+            "Anticlockwise Attractive",
+            "Anticlockwise Repulsive"
+        ],
+        "answer": "Clockwise Attractive",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1100,
+        "topic": "D.3",
+        "type": "mc",
+        "text": "A coil is rotated in a magnetic field. An external resistor is connected to the coil. The graphs show the\nvariation with time of the voltage across the resistor and the power dissipated in the resistor.\n```\nX\n```\n```\nY\n```\n```\nV / kV\n```\n```\nt /ms\n3\n–5\n```\n```\n0\n```\n```\n15\n```\n```\n5\n```\n```\n10\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\n–10\n–15\n```\n```\n4\n```\n```\nP / kW\n```\n```\nt /ms\n3\n```\n```\n20\n```\n```\n15\n```\n```\n10\n```\n```\n5\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\n0",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1000,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "4\n```\n```\nThe frequency of rotation is halved. Which graphs show the correct variation with time of the voltage and\nthe power for the same resistor?\n```\n### B\n### C\n### D\n```\nt /ms\n3\n–5\n```\n```\n0\n```\n```\n15\n```\n```\n5\n```\n```\n10\n```\n```\n–10\n–15\n```\n```\n4\n```\n```\nP / kW\n```\n```\nt /ms\n3\n```\n```\n20\n```\n```\n15\n```\n```\n10\n```\n```\n5\n```\n```",
+        "marks": 1,
+        "options": [
+            "_V_ / kV"
+        ],
+        "answer": "_V_ / kV",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\n0",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1000,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "4\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\nV / kV\n```\n```\nt /ms\n3\n–5\n```\n```\n0\n```\n```\n15\n```\n```\n5\n```\n```\n10\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\n–10\n–15\n```\n```\n4\n```\n```\nP / kW\n```\n```\nt /ms\n3\n```\n```\n20\n```\n```\n15\n```\n```\n10\n```\n```\n5\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\n0",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1000,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "4\nV / kV\n```\n```\nt /ms\n3\n–5\n```\n```\n0\n```\n```\n15\n```\n```\n5\n```\n```\n10\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\n–10\n–15\n```\n```\n4\n```\n```\nP / kW\n```\n```\nt /ms\n3\n```\n```\n20\n```\n```\n15\n```\n```\n10\n```\n```\n5\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\n0",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1000,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "4\nV / kV\n```\n```\nt /ms\n3\n–5\n```\n```\n0\n```\n```\n15\n```\n```\n5\n```\n```\n10\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\n–10\n–15\n```\n```\n4\n```\n```\nP / kW\n```\n```\nt /ms\n3\n```\n```\n20\n```\n```\n15\n```\n```\n10\n```\n```\n5\n```\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1001,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "2\n```\n```\n0",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1000,
+        "topic": "D.1",
+        "type": "mc",
+        "text": "4\n```",
+        "marks": 1,
+        "options": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "answer": "A",
+        "fullAnswer": "Multiple choice question. Select the correct answer."
+    },
+    {
+        "id": 1,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "```\n(a) State Newton’s law of gravitation. [2]\n```\n```\n(b) Show that a moon orbiting a planet of mass M in a circular orbit of radius r and period T\n```\n```\n23\n```\n```\n2\n```\n```\n4 r\nGM\nT\n```\n### \n\n#### =. [2]\n\n```\n(c) Io is a moon of Jupiter with orbit radius 4.2× 105 m and period 1.8 days. Titan is a moon of\n```\n```\nSaturn with orbit radius 1.2× 10\n```\n```\n6\nm and period 16 days.\n```\n```\nCalculate the ratio of Jupiter mass to Saturn mass\n```\n```\nJ\n```\n```\nS\n```\n#### M\n\n#### M\n\n#### . [3]\n\n\n```",
+        "marks": 2,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a** There is an attractive force between two point masses acting along the line\n\n```\njoining them✓\n```\n```\nWhich is proportional to the product of the masses and inversely proportional\n```\n```\nto the square of their separation✓\n```\n#### 2\n\n**b** (^) _GM_ 2 _r GM\nv\nr T r_\n\n### \n\n#### = =\n\n#### \n\n#### ✓\n\n```\n22\n```\n```\n2\n```\n```\n4 r GM\n```\n```\nTr\n```\n### \n\n#### = ✓\n\n```\nRearranging to get answer.\n```\n#### 2\n\n**c** 3\nIo\n2\nJ Io\n3\nS Titan\n2\nTitan\n\n```\nr\n```\n#### MT\n\n```\nM r\n```\n#### T\n\n#### = ✓\n\n```\n32\nJ Io Titan\n32\nS Titan Io\n```\n```\nM r T\n```\n```\nM r T\n```\n#### = ✓\n\n```\n5 3 2\nJ\n6\nS\n```"
+    },
+    {
+        "id": 4,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "2 10 16",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 3,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "39 3.",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 1,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "2 10 1.\n\n#### M\n\n#### M\n\n####  \n\n#### == \n\n####  \n\n#### ✓\n\n#### 3",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 2,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "```\n(a) State what is meant by gravitational field strength. [ 2 ]\n```\n```\n(b) The dwarf planet Pluto orbits the Sun in an elliptical orbit. The minimum distance\n```\n```\nbetween Pluto and the Sun is 30 AU and the maximum distance is 50 AU. One AU is the\n```\n```\ndistance between the Earth and the Sun and equals 1.5× 10\n```\n```\n11\nm.\n```\n```\nPluto has its maximum speed at P.\n```\n```\nOn the diagram draw\n```\n```\n(i) the approximate position of the Sun. [1]\n```\n```\n(ii) an arrow to indicate the gravitational force on Pluto from the Sun. [1]\n```\n```\n(iii) an arrow to indicate the acceleration of Pluto. [1]\n```\n```\n(c) The maximum speed of Pluto in its orbit is 5.4× 10\n```\n```\n3\nm s\n```\n- 1\n   . Calculate Pluto’s minimum\n\n```\nspeed in its orbit. [2]\n```\n```\nPluto\n```\n#### P\n\n\n```",
+        "marks": 1,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a** The gravitational force per unit mass✓\n\n```\nExperienced by a test mass (a small, point mass)✓\n```\n#### 2\n\n**b i**\n\n```\nApproximately correct position on major axis ✓\n```\n```\n(Do not accept center of ellipse)\n```\n#### 1\n\n**b ii**\n\n```\nArrow towards Sun (consistent with (i))✓\n```\n#### 1\n\n**b iii**\n\n```\nArrow towards Sun (consistent with (i))✓\n```\n#### 1\n\n**c**\n\n```\n3\nv A =  50 5.4 10 30 ✓\n```\n```\n3 3 1\nA\n```\n#### 30\n\n```\n5.4 10 3.2 10 m s\n50\n```\n```\nv\n```\n```\n−\n=   =  ✓\n```\n#### 2\n\n```\nPluto\n```\n```\nPluto\n```\n```\nPluto\n```"
+    },
+    {
+        "id": 3,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "```\n(a) A satellite is in a circular orbit of radius r around the Earth. Show that the time T to\n```\n```\ncomplete one revolution is given by\n```\n```\n2\n234\nTr\nGM\n```\n### \n\n```\n= where M is the mass of the Earth. [ 2 ]\n```\n```\n(b) A geostationary orbit is an orbit in which T = 24 hours. The mass of the Earth is 6.0× 10\n```\n```\n24\n```\n```\nkg and the radius of the Earth is 6.4× 10\n```\n```\n6\nm.\n```\n```\n(i) Show that the height of a satellite in a geostationary orbit is about 3.6× 10\n```\n```\n7\nm above the\n```\n```\nEarth’s surface. [3]\n```\n```\n(ii) Hence show that the speed of this satellite is 3.1× 10\n```\n```\n3\nm s\n```\n- 1\n   . [2]\n\n```\n(iii) Suggest an advantage of a satellite in a geostationary orbit. [2]\n```\n```\n(iv) On the diagram draw a possible geostationary orbit. [1]\n```\n```\n(v) Explain why the orbit shown is not a possible orbit in which gravity is the only force acting.\n```\n#### [2]\n\n```\n(c) Another satellite is in a low Earth orbit at a height of 320 km above the Earth’s surface.\n```\n```\nCalculate the period of revolution in the low Earth orbit. [2]\n```\n```\n(d) The diagram shows how the satellite in the low Earth orbit of (c) can be moved to the\n```\n```\nhigher orbit of (b). Engines are fired at P and the satellite enters the red elliptical orbit. At A\n```\n```\nthe engines are fired again, and the satellite enters the high orbit. When in the elliptical orbit,\n```\n```\nthe speed at A is 1.6× 10\n```\n```\n3\nm s\n```\n- 1\n   .\n\n```\nNorth Pole\n```\n```\nSouth Pole\n```\n```\nEquator\n```\n```\nNorth Pole\n```\n```\nSouth Pole\n```\n```\nEquator\n```\n\n(i) Calculate the work done when the rocket engines are fired at A. The mass of the satellite is\n\n350 kg. [4]\n\n(ii) The force exerted by the rocket engines is 8 0 kN. Estimate the time interval for which the\n\nrocket engines must fire. [2]\n\n#### •\n\n#### •\n\n#### A\n\n#### P\n\n```\nnot to scale\n```\n\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a** (^) _GM_ 2 _r GM\nv\nr T r_\n\n### \n\n#### = =\n\n#### \n\n#### ✓\n\n```\n22\n```\n```\n2\n```\n```\n4 r GM\n```\n```\nTr\n```\n### \n\n#### = ✓\n\n```\nRearranging to get answer.\n```\n#### 2\n\n**b i** (^32)\n2\n4\n\n#### GM\n\n```\nrT\n```\n### \n\n#### = ✓\n\n```\n11 24\n3 2 7\n2\n```"
+    },
+    {
+        "id": 6,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "67 10 6.0 10\n\n```\n(24 3600) 4.23 10 m\n4\n```\n```\nrr\n```\n### \n\n```\n−\n  \n=    =  ✓\n```\n```\n7 6 7 7\nh =  −  =   4.23 10 6.4 10 3.59 10 3.6 10 m✓\n```\n#### 3\n\n**b ii** (^2) _r\nv\nT_\n\n### \n\n#### = ✓\n\n```\n7\n2 4.23 10 3 3 1\n3.07 10 3.1 10 m s\n24 60 60\n```\n```\nv\n```\n###  −\n\n#### = =   \n\n#### \n\n#### ✓\n\n#### 2\n\n**b iii** They look down at the same point on Earth✓\n\n```\nAnd so are useful for communications, surveillance etc.✓\n```\n#### 2\n\n**b iv** (^) A circular orbit above the equator✓\n**1\nb v** The resultant force on the satellite points towards the center of the circular\norbit ✓^\nBut the gravitational force is pointing towards the earth’s center ✓^\n\n#### 2\n\n**c**\n723\n\n```\n62\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 4,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "23 10 24",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 6,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "72 10 T\n\n#### \n\n#### =\n\n#### \n\n#### ✓\n\n```\nT =1.520 hours 91.2 91 min=  ✓\n```\n#### 2\n\n**d i** (^) Speed in the elliptical orbit is 1.6  103 m s-^1 which must be increased to the\ncircular orbit speed 3.1  10\n3\nm s\n\n- 1\n    ✓\n\n```\nThe change in kinetic energy is\n```\n#### 4\n\n```\nNorth Pole\n```\n```\nSouth Pole\n```\n```\nEquator\n```\n```\nnot to scale\n```\n\n# ( )\n\n(^1) 3 2 3 2 9\n\n### 350 (3.1 10 ) (1.6 10 ) 1.2 10 J\n\n### 2\n\n###    −  =  ✓^\n\n```\nThere is no change in gravitational potential energy so the change in the total\n```\n```\nenergy is\n```\n```\n9\n```\n### 1.2 10 J ✓\n\n```\nSo, the work done by the engines is\n```\n```\n9\n```\n### 1.2 10 J ✓\n\n**d ii** (^) The impulse needed is\n\n# ( )\n\n```\n3 3 5\n```\n### J =   −  =  350 3.1 10 1.6 10 5.25 10 N s✓\n\n```\n5\n```\n```\n3\n```\n### 5.25 10\n\n### 6.6 s\n\n### 80 10\n\n### J\n\n### t\n\n### F\n\n### \n\n###  = = =\n\n### \n\n#### ✓\n\n#### 2",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 4,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "```\nThe graph shows the variation with distance r of the gravitational potential, V g, due to a\n```\n```\nplanet of radius 2.0× 10\n```\n```\n5\nm.\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 0,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "2 0.4 0.6 0.8 1. 1.2 1.4 1.6 1.8 2.\n\n```\nr 10\n```\n```\n6\nm\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 0,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "#### 0",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 1,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "#### V 10\n\n```\n10\nJkg\n```\n```\n1\n```\n```\n(a) Calculate the mass of the planet. [2]\n```\n```\n(b) Show that the escape speed from the surface of the planet may be written as\n```\n```\nvV esc=− 2 , where V is the gravitational potential on the planet’s surface. [1]\n```\n```\n(c) Determine the escape speed from this planet. [2]\n```\n```\n(d)\n```\n```\n(i) Calculate how much energy is required to move a rocket of mass 1500 kg from the surface\n```\n```\nof the planet to a point 1.0× 10\n```\n```\n6\nm from the centre. [2]\n```\n```\n(ii) Determine the additional energy required to put the rocket in orbit at the distance in part\n```\n```\n(i). [2]\n```\n```\n(e) A probe is released from rest at a distance from the planet’s canter of 0.50× 10\n```\n```\n6\nm\n```\n```\nand crashes onto the planet’s surface. Determine the speed with which the\n```\n```\nprobe hits the surface. [ 3 ]\n```\n\n```",
+        "marks": 2,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a**\nAt surface\n\n```\n10 1\n5.0 10 J kg\n```\n#### GM\n\n#### V\n\n#### R\n\n```\n−\n= − = −  ✓\n```\n```\n10 5\n26 26\n11\n```"
+    },
+    {
+        "id": 5,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "0 10 2.0 10\n\n```\n1.499 10 1.5 10 kg\n6.67 10\n```\n#### M\n\n```\n−\n```\n####   \n\n#### = =   \n\n#### \n\n#### ✓\n\n#### 2\n\n**b**\n\n```\nesc^2\n```\n#### GM GM\n\n```\nv\nRR\n```\n####  \n\n#### = = − −\n\n#### \n\n#### ✓\n\n```\nvV esc=− 2\n```\n#### 1\n\n**c** 10\n_vV_ esc= − = −  −  2 2 ( 5.0 10 )✓\n\n```\n51\nv esc 3.2 10 m s\n```\n```\n−\n= ✓\n```\n#### 2\n\n**d i** (^) _W_ = _m V_ and  = −  − −  =  _V_ ( 1.0 10^10 ( 5.0 10 ) 4.0 10 Jkg^1010 −^1 ✓\n10 13\n\n###  = V 1500 4.0 10  = 6.0 10 J✓\n\n#### 2\n\n**d ii** We must provide the kinetic energy in orbit:\n\n```\n2\n2\n2 K\n```\n#### 11\n\n#### 22\n\n```\nmv GMm GMm GMm\nmv E mV\nr r r r\n```\n#### =  =  = = − ✓\n\n```\n10 12\nK\n```\n#### 1\n\n#### 1500 ( 1.0 10 ) 7.5 10 J\n\n#### 2\n\n#### E = −   −  =  ✓\n\n#### OR\n\n```\nTotal energy in orbit is\n```\n```\n10\n1500 1.0 10 12\n7.5 10 J\n2 2 2\n```\n```\nGMm mV\n```\n```\nr\n```\n#### \n\n#### − = = − = −  ✓\n\n```\nEnergy in initial position is\n```\n```\n10 13\n1500 5.0 10 7.5 10 J\n```\n```\nGMm\nmV\nR\n```\n```\n− = = −   = −  so\n```\n```\ndifference is\n```\n```\n12 13 13\n−  − −  = 7.5 10 ( 7.5 10 ) 6.75 10 J. We have already provided\n```\n```\n13\n6.0 10 J so the additional energy is\n```\n```\n13 13 12\n6.75 10 −  = 6.0 10 7.5 10 J ✓\n```\n#### 2\n\n**e**\n\n```\n6\nE T= mV at r = 0.50 10 m✓\n```\n```\n2\nsurface surface\n```\n#### 1\n\n#### 2( )\n\n#### 2\n\n```\nmv + mV =  = mV v V V − ✓\n```\n```\n10 10 5 1\nv 2( 2.0 10 ( 5.0 10 )) 2.4 10 m s\n```\n```\n−\n= −  − −  =  ✓\n```\n#### 3",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 5,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "```\nThe graph shows the variation with distance r from the centre of a planet of the combined\n```\n```\ngravitational potential V g due to the planet (of mass M ) and its moon (of mass m ) along the\n```\n```\nline joining the planet and the moon. The horizontal axis is labelled\n```\n```\nr\n```\n```\nd\n```\n```\n, where d is the centre-\n```\n```\nto-centre separation of the planet and the moon. The graph starts on the surface of the\n```\n```\nplanet and ends on the surface of the moon.\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 0,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "2 0.4 0.6 0.8 1.\n\n```\nrd\n```\n#### 25\n\n#### 20\n\n#### 15\n\n#### 10\n\n#### 5\n\n#### 0\n\n#### V 10\n\n```\n8\nJkg\n```\n```\n1\n```\n```\n(a) (i) The distance d is equal to 4.8× 10\n```\n```\n8\nm. Use the graph to calculate the magnitude of the\n```\n```\ngravitational field strength at the point where 0.\n```\n```\nr\n```\n```\nd\n```\n```\n= to one s.f. [3]\n```\n```\n(ii) Suggest why it is not worth giving the answer to more than 1 s.f. [2]\n```\n```\n(b) Explain the physical significance of the point where 0.75.\n```\n```\nr\n```\n```\nd\n```\n#### = [2]\n\n```\n(c) Calculate the ratio M / m. [2]\n```\n```\n(d) A probe of mass 2500 kg is to leave the surface of the moon and return to the surface of the\n```\n```\nplanet.\n```\n```\nDetermine the minimum kinetic energy that must be given to the probe on the surface of the\n```\n```\nmoon. [2]\n```\n\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a i** The gravitational field strength is the gradient of the tangent to the potential\n\n```\ncurve ✓\n```\n```\n0.2 0.4 0.6 0.8 1.\n```\n```\nrd\n```\n```\n25\n```\n```\n20\n```\n```\n15\n```\n```\n10\n```\n```\n5\n```\n```\nV 10\n```\n```\n8\nJkg\n```\n```\n1\n```\n### Tangent drawn✓\n\n```\nGradient:\n```\n```\n8\n1\n8\n```\n#### 0 ( 12 10 )\n\n```\n6.25 6 N kg\n(0.40 0) 4.8 10\n```\n```\ng\n```\n#### − −  −\n\n#### = = \n\n#### −  \n\n#### ✓\n\n#### 3\n\n**a ii** Drawing the tangent by hand is very inaccurate✓\n\n```\nThe gradient is very sensitive to the line drawn✓\n```\n#### 2\n\n**b** The gradient of the potential curve is zero✓\n\n```\nSo g is zero✓\n```\n#### 2\n\n**c**\n\n```\n22\n0.75 0.\n```\n```\nGM Gm\n= ✓\n```\n```\n2\n```\n```\n2\n```"
+    },
+    {
+        "id": 0,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "#### 9",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 0,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "#### M\n\n```\nm\n```\n#### ==✓\n\n#### 2\n\n**d** Probe must make it to the top of the potential energy curve✓\n\n```\n8 8 12\n```\n### W =  =  −  − −  =  m V 2500 ( 2.0 10 ( 10 10 ) 2.0 10 J ✓\n\n#### 2",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 6,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "(a)\n\n(i) State what is meant by _gravitational potential energy_ of a system of two masses. [1]\n\n(ii) A probe is at rest on the surface of a planet. Suggest why the gravitational potential energy of\n\n```\nthe planet and the probe is negative. [1]\n```\n(b) A satellite is in a circular orbit around a planet. The graph shows the variation of the kinetic\n\n```\nenergy of the satellite with orbit radius. Units are for reference and are arbitrary.\n```\n```\n0.5 1 1.5 2\n```\n```\nr\n```\n```\n10\n```\n```\n8\n```\n```\n6\n```\n```\n4\n```\n```\n2\n```\n```\n0\n```\n```\n2\n```\n```\n4\n```\n```\n6\n```\n```\n8\n```\n```\n10\n```\n```\nEK\n```\nDraw, on the axes, the variation of the potential energy of the satellite, with orbit radius. [2]\n\n(c) Engines are fired to bring the satellite closer to the planet surface. State and explain\n\n```\n(i) the change in the satellite’s kinetic energy, [2]\n```\n```\n(ii) the change in the satellite’s total energy, [2]\n```\n```\n(iii) whether the work done by the engines is positive or negative. [2]\n```\n\n```",
+        "marks": 1,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a i** The work done by an external agent in bringing the masses from an infinite\n\n```\nseparation to their present positions✓\n```\n#### 1\n\n**a ii**\n\n```\nThe diagram shows the force (in blue) that the external agent must exert to\n```\n```\nbring the two masses close to each other at a small, constant speed✓\n```\n```\nThe work done by the external agent is negative✓\n```\n#### 2\n\n**b**\n\n```\n0.5 1 1.5 2\n```\n```\nr\n```\n```\n10\n```\n```\n8\n```\n```\n6\n```\n```\n4\n```\n```\n2\n```\n```\n0\n```\n```\n2\n```\n```\n4\n```\n```\n6\n```\n```\n8\n```\n```\n10\n```\n```\nE\n```\n```\nRed curve\n```\n```\nNegative✓\n```\n```\nDouble in magnitude✓\n```\n#### 2\n\n**c i**\n\n```\nK\n2\n```\n```\nGMm\nE\nr\n```\n#### = ✓\n\n```\nSo since r decreases KE increases✓\n```\n#### 2\n\n**c ii**\n\n```\nT\n2\n```\n```\nGMm\nE\nr\n```\n#### =− ✓\n\n### So, since r decreases total energy becomes more negative i.e. decreases✓\n\n#### 2\n\n**c iii** Work done is the change in the total energy✓\n\n```\nSo, work done is negative✓\n```\n#### 2\n\n```\ngravitational force force\n```"
+    },
+    {
+        "id": 7,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "```\nA probe of mass m = 3.8× 10\n```\n```\n4\nkg is launched from the surface of a planet of mass M = 5.0× 10\n```\n```\n23\n```\n```\nkg and radius R with kinetic energy\n```\n#### 9\n\n#### 10\n\n```\nGMm\n```\n#### R\n\n#### .\n\n```\n(a) State what is meant by escape speed. [1]\n```\n```\n(b) Explain, by reference to escape speed, why the probe will eventually crash on the surface\n```\n```\nof the planet. [2]\n```\n```\n(c) The kinetic energy of the probe as it passes a point a distance 2 R from the centre of the\n```\n```\nplanet is 9.0× 10\n```\n```\n10\nJ. Calculate R. [3]\n```\n```\n(d) Determine the largest distance from the centre of the planet the probe will get to. [ 2 ]\n```\n\n```",
+        "marks": 1,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a** The minimum speed at launch so that an object gets to infinity✓ **1**\n\n**b**\n2\nK\n\n#### 19\n\n#### 2 10 5\n\n```\nGMm GM\nE mv v\nRR\n```\n#### \n\n#### = =  = ✓\n\n```\nesc\n```\n#### 2\n\n#### ()\n\n#### 5\n\n#### GM GM\n\n```\nv\nRR\n```\n#### \n\n#### =✓\n\n#### OR\n\n```\n2\nKT\n```\n#### 1 9 9\n\n#### 2 10 10\n\n```\nGMm GMm GMm\nE mv E\nR R R\n```\n#### = =  = − ✓\n\n#### T^0\n\n#### 10\n\n```\nGMm\nE\nR\n```\n#### = −  ✓\n\n#### 2\n\n**c** (^910)\n9.0 10\n10 2\n_GMm GMm GMm_\n\n#### R R R\n\n#### − =  − ✓\n\n```\n11 23 4\n2 10 2 6.67 10 5.0 10 3.8 10 10\n9.0 10 9.0 10\n55\n```\n```\nGMm\n```\n#### RR\n\n```\n−\n     \n=   =  ✓\n```\n```\n6\nR =5.6 10 m✓\n```\n#### 3\n\n**d** (^9)\n\n#### 10 10\n\n```\nGMm GMm GMm GMm\n```\n```\nr R R R\n```\n#### − = − = − ✓\n\n```\n7\nrR = =  10 5.6 10 m✓\n```\n#### 2"
+    },
+    {
+        "id": 8,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "```\nA potential difference of 280 V is established between two parallel plates a distance 14 mm\n```\n```\napart. A proton is placed on the positive plate and then released.\n```\n(a) (i) Draw the electric field lines for this arrangement. [2]\n\n(ii) Estimate the electric field strength in between the plates. [ 1 ]\n\n(b) Calculate, in J, the work done by the electric force in moving the proton from one plate to the\n\n```\nother. [ 1 ]\n```\n(c) (i) The proton impacts the negative plate with speed _v_ p. An alpha particle placed at the positive\n\n### plate and released impacts the negative plate with speed v . Determine the ratio\n\n```\nv p\n```\n```\nv \n```\n#### , [3]\n\n(ii) Determine the ratio\n\n```\nt p\n```\n```\nt \n```\n```\nof the times taken for the proton and the alpha [article to reach the\n```\n```\nnegative plate, [3]\n```\n(iii) The separation of the plates is doubled. Suggest how the answer to (c) (i) changes, if at all. [1]\n\n```\n14 mm\n```\n\n```",
+        "marks": 2,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a i** Uniformly spaced lines in between plates directed from the positive to negative\n\n```\nplate✓\n```\n```\nCurved edge effects✓\n```\n#### 2\n\n**a ii** (^41)\n3\n\n#### 280"
+    },
+    {
+        "id": 2,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "0 10 N C\n\n#### 14 10\n\n#### V\n\n#### E\n\n```\nd\n```\n```\n−\n= = − = \n\n```\n#### ✓\n\n#### 1\n\n**b i** (^) _W_ =  =   =    _q V_ 1.6 10−^19 280 4.48 10−^17 4.5 10−^17 J✓ **1\nc i** (^2)\npp\n\n#### 1\n\n#### 2\n\n```\nm v = q V and\n```\n(^12)\n2\n2\n_m v_ = _q V_ ✓\nHence:\n22\npp\n\n#### 11\n\n#### 2\n\n#### 22\n\n```\n= m v m v ✓\n```\n```\n2\npp\n2\np\n```\n#### 22\n\n#### 2\n\n```\nvvm\n```\n```\nv m v\n```\n```\n\n```\n```\n\n```\n#### =    ✓\n\n#### 3\n\n**c ii**\n1 2 2 2 2\n\n#### 2\n\n```\nd d md\nd at t\na qE qE\n```\n```\nm\n```\n#### =  = = = ✓\n\n```\nHence,\n```\n```\npp\n```\n```\np\n```\n```\ntmq\n```\n```\nt m q\n```\n```\n\n```\n```\n\n```\n#### = ✓^\n\n```\np 1 2^1\n```\n(^412)\n_t\nt_ \n\n#### =  = ✓\n\n#### 3\n\n**c iii** The work done for each particle is the same, so the ratio does not change✓\n**1**",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 9,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "```\nThe diagram shows electric field lines for two point charges X and Y. At point P the net\n```\n```\nelectric field strength is zero.\n```\n```\n(a) State what is meant by\n```\n```\n(i) electric field strength , [2]\n```\n```\n(ii) electric field lines. [2]\n```\n```\n(b) State three properties of electric field lines. [3]\n```\n```\n(c) State the signs of X and Y. [1]\n```\n```\n(d) (i) Explain how it is known that the magnitude of the charge of X is greater than that of Y.\n```\n```\n(ii) By making appropriate measurements on the diagram with your ruler estimate the ratio of\n```\n```\ncharge X to charge Y. [2]\n```\n```\n(e) A negatively charged point particle is held close to a neutral, conducting sphere that hangs\n```\n```\nfrom an insulated thread.\n```\n#### •\n\n#### P\n\n\nThe sphere experiences an attractive force.\n\n(i) Explain how this force arises. [3]\n\n(ii) The negatively charged point particle is replaced by a positively charged particle. State and\n\n```\nexplain what will happen now. [2]\n```\n```\nneutral\n```\n```\nnegative\n```\n\n```",
+        "marks": 2,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a i** (^) The electric force per unit charge✓\nExerted on a test charge (small, positive, point charge) ✓\n\n#### 2\n\n**a ii** (^) Field lines are mathematical lines originating and ending in electric charges (or\ninfinity)✓\nTangents to these lines give the direction of the electric field at a point✓\n\n#### 2\n\n**b** (^) The leave from positive charges (or infinity) and end in negative charges (or\ninfinity)✓\nThey cannot cross✓\n\n### Their density is proportional to the electric field strength✓\n\n#### 3\n\n**c** X is positive and Y is negative✓ **1**\n\n**d i** The electric field is zero at P which is closer to Y✓\n\n```\nOR\n```\n```\nThe field lines of X are not as different from that of a single point charge as that\n```\n```\nof Y✓\n```\n#### 1\n\n**d ii**\nRatio of distances approximately:\n\n#### XP"
+    },
+    {
+        "id": 2,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "5\n\n#### YP\n\n####  ✓^\n\n```\nX Y X^2\n22\nY\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 2,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "5 6.25 6",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 2,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "5 1.0\n\n```\nkQ kQ Q\n```\n#### Q\n\n#### =  = =  ✓\n\n#### 2\n\n**e i** The point charge pushes electrons to the left side of the sphere✓\n\n```\nLeaving an excess positive charge on the right side of the sphere✓\n```\n```\nThe positive charge on the sphere is closer to the point charge than the\n```\n```\nnegative charge on the sphere, resulting in an attractive force✓\n```\n#### 3\n\n**e ii** The positively charged particle will attract electrons to the right side of the\n\n```\nsphere✓\n```\n```\nThe force will again be attractive✓\n```\n#### 2",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 10,
+        "topic": "D.3",
+        "type": "fr",
+        "text": "```\nThe diagram shows two parallel wires, X and Y, a distance 2 4 mm apart, each carrying current\n```\n```\n3.0 A into the page.\n```\n```\n(a) On the diagram, draw arrows to indicate\n```\n```\n(i) the magnetic field at the position of each wire. [2]\n```\n```\n(ii) the magnetic force on each wire. [2]\n```\n(b) The current in wire X is doubled. Calculate the force per unit length on wire X and wire Y. [4]\n\n```\n(c) The diagram shows two current carrying rings X and Y with their planes parallel.\n```\n```\nLooked at from the left, the current in X is counter-clockwise and that in Y clockwise.\n```\n```\nDetermine the direction of the magnetic force on each ring. [2]\n```\n```\n(d) A wire on a vertical plane carrying a current of 12 A is normal to the magnetic field of two\n```\n```\nbar magnets. The magnetic field may be assumed to be negligible outside the shaded region\n```\n```\nand constant at 0.50 T in the shaded region. A length L = 5.0 cm of the wire is in the region of\n```\n```\nthe magnetic field.\n```\n```\n(i) Determine the direction of the force on the wire [1]\n```\n```\n(ii) Estimate the magnetic force on the wire. [1]\n```\n```\nS N 5.0 cm^ S N\n```\n#### X Y\n\n#### X Y\n\n\n(e) A second wire carrying the same current is placed in the region between the poles of the\n\n### magnets in (d) making an angle 30 with the magnetic field. The wire is still on a vertical\n\nplane.\n\nEstimate the magnetic force on the wire. [ 2 ]\n\n#### S N S N\n\n#### 30\n\n\n```",
+        "marks": 2,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a i**\n\n```\nEqual arrows✓\n```\n```\nIn directions shown✓\n```\n#### 2\n\n**a ii**\n\n```\nEqual magnitude and opposite forces✓\n```\n```\nAttractive✓\n```\n#### 2\n\n**b** (^) Both wires will experience the same magnitude force✓\n12 7\n(^03)"
+    },
+    {
+        "id": 6,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "0 3.0\n\n#### 4 10\n\n#### 2 2 24 10\n\n#### F I I\n\n```\nLr\n```\n### \n\n### \n\n```\n−\n−\n```\n#### \n\n#### = =  \n\n#### \n\n#### ✓\n\n```\n41\n1.5 10 N m\n```\n#### F\n\n#### L\n\n```\n−−\n= ✓^\n```\n#### 3\n\n**c**\n\n```\nThe rings behave as the bar magnets shown✓\n```\n```\nHence equal and opposite repulsive forces on rings✓\n```\n#### 2\n\n**d i** (^) By the right-hand force rule the force is directed out of the page✓ **1\nd ii** _F_ = =   _BIL_ 0.50 12 0.050 0.30 N= ✓ **1\ne** (^) _F_ = _BIL_ sin30 and _L_ sin30 =0.050 m✓\n\n### So F =0.30 N out of the page ✓\n\n#### 2\n\n#### X Y\n\n#### X Y\n\n```\nN S S N\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 11,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "```\nA current I is established in the conductor. The diagram shows one of the electrons making\n```\n```\nup the current moving with drift speed v. The conductor is exposed to a magnetic field\n```\n```\nB at right angles to the direction of motion of the electron.\n```\n```\n(a) Draw an arrow to indicate the direction:\n```\n```\n(i) of the conventional current in the conductor [1]\n```\n```\n(ii) the magnetic force on the electron. [1]\n```\n```\n(b) Explain why an electric field will be established between the top (T) and bottom (B) faces of\n```\n```\nthe conductor. [3]\n```\n```\n(c) The drift speed of the electrons is 2.4  10\n```\n- 4\n    m s\n       - 1\n          and the magnetic field is 0.20 T. The\n\n```\ndistance d is 5 .0 mm. Calculate the potential difference between T and B. [3]\n```\n```\n(d) Outline how the existence of this potential difference can be used to verify the sign of the\n```\n```\ncharge carriers in the conductor. [2]\n```\n```\nT (Top)\n```\n```\nB (Bottom)\n```\n\n```",
+        "marks": 1,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a i** Arrow to the left✓ **1**\n\n**a ii** Vertically upward✓ **1**\n\n**b** Electrons will accumulate on the T surface✓\n\n```\nLeaving an equal excess positive charge at the B surface✓\n```\n```\nHence there will be an electric field directed from B to T✓\n```\n#### 3\n\n**c** _qE_ = _qvB_ ✓^\n\n#### V\n\n```\nvB V vBd\nd\n```\n#### =  = ✓\n\n```\n4 3 7\nV 2.4 10 0.20 5.0 10 2.4 10 V 0.24μV\n```\n```\n− − −\n=     =  = ✓\n```\n#### 3\n\n**d** With negative charge carriers✓\n\n```\nThe polarity of the voltage is such that the top side of the conductor will be\n```\n### negative✓\n\n#### 2"
+    },
+    {
+        "id": 12,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "```\n(a) Electric charge is said to be quantized. Explain what is meant by this statement. [2]\n```\n```\nIn an experiment, electrically charged oil drops are introduced in the space between two\n```\n```\noppositely charged parallel plates though a small hole in the upper plate.\n```\n(b) The potential difference between the plates is 648 V and the distance between them is 7.62 mm.\n\nCalculate the electric field strength _E_ in between the plates. [1]\n\n(c) A particular oil drop is observed to be stationary in the space between the plates. The buoyant\n\nforce on the oil drop is negligible.\n\n```\n(i) Identify the forces on this oil drop by drawing and labelling arrows on the diagram. [2]\n```\n```\n(ii) State the sign of the charge on this oil drop. [1]\n```\n```\n(iii) Show that the electric charge on this oil drop is given by\n```\n```\n3\n```\n(^4) o\n\n#### 3\n\n```\nrg\nq\nE\n```\n### \n\n#### =\n\n```\nwhere o is the density of oil and r is the radius of the oil drop. [ 2 ]\n```\n```\noil drop\n```\n#### + + + + + +\n\n#### _ _ _ _ _ _\n\n#### •\n\n```\noil drop\n```\n\n(d) The electric field is turned off. The oil drop in (c) is now observed to fall vertically with constant\n\nterminal speed _v_. State the magnitude of the net force on the oil drop. [1]\n\n(e) The following data are available:\n\n```\nViscosity of air\n```\n```\n5\n1.60 10 Pa s\n```\n```\n−\n\n```\n```\nTerminal speed of oil drop\n```\n```\n41\n1.20 10 m s\n```\n```\n−−\n\n```\n```\nDensity of oil\n```\n```\n3\n703 kg m\n```\n```\n−\n```\n```\n(i) Determine the radius of the oil drop. [3]\n```\n```\n(ii) Hence, show that the magnitude of the charge on the oil drop is about 3 e. [ 1 ]\n```\n```\n(iii) The oil drop splits into two equal smaller oil drops. Both are charged. State and explain the\n```\n```\nmagnitude of the charge on each of the two oil drops. [2]\n```\n\n```",
+        "marks": 2,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a** Every measured value of electric charge✓\n\n```\nis an integral multiple of a certain fundamental quantity of charge✓\n```\n#### 2\n\n**b** (^441)\n3\n\n#### 648"
+    },
+    {
+        "id": 8,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "5039 10 8.50 10 N C",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 7,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "62 10\n\n#### V\n\n#### E\n\n```\nd\n```\n```\n−\n−\n```\n#### = = =   \n\n#### \n\n#### ✓\n\n#### 1\n\n**c i**\n\n```\nCorrect labels✓\n```\n```\nEqual lengths✓\n```\n#### 2\n\n**c ii** Negative✓ **1**\n\n**c iii**\n_mg_ ==oil _Vg qE_ ✓ and\n\n```\n3\n4\n```\n#### 3\n\n```\nr\nV\n```\n### \n\n#### =\n\n```\n3\n```\n(^4) oil\n\n#### 3\n\n```\nrg\nq\nE\n```\n### \n\n#### = ✓\n\n#### 2\n\n**d** Zero✓ **1**\n\n**e i**\n\n```\n3\n```\n```\noil\n```\n#### 4\n\n#### 6\n\n#### 3\n\n```\nr\nmg g rv\n```\n### \n\n### ==  ✓\n\n```\noil\n```\n#### 9\n\n#### 2\n\n```\nv\nr\ng\n```\n### \n\n### \n\n#### = ✓\n\n```\n45\n9 1.20 10 1.60 10 66\n1.1199 10 1.12 10 m\n2 703 9.8\n```\n```\nr\n```\n```\n−−\n −−\n= =   \n\n```\n#### ✓\n\n#### 3\n\n**e ii** 63\n19 19\n4\n\n#### 4 (1.1199 10 ) 9.8 703",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 4,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "76 10 C 4.8 10 C 3\n\n#### 3 8.5093 10\n\n```\nqe\n```\n### \n\n```\n−\n    −−\n= =    =\n\n```\n#### ✓\n\n#### 1\n\n**e iii** Charge is quantized in units of _e_ ✓\n\n```\nSo, the oil drops must have charges of e and 2 e ✓\n```\n#### 2\n\n```\noil drop\n```\n```\nelectric force\n```\n```\nweight\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 13,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "```\nTwo parallel plates are 15 mm apart. The lower plate is earthed and the top is kept at\n```\n```\npotential of – 120 V. Point P is at a distance x from the lower plate.\n```\n(a) (i) Calculate the magnitude of the electric field strength at P. [1]\n\n(ii) Determine, in terms of _x_ , the electric potential at P. [2]\n\n(b) A proton is placed at the lower plate and is then released. Calculate\n\n(i) the time it would take the proton to reach the top plate, [2]\n\n(ii) the speed with which the proton arrives at the top plate. [ 1 ]\n\n(c) The distance between the plates is doubled. Suggest how the answers to (b) (i) and (ii) change, if\n\n```\nat all. [3]\n```\n#### – 120 V\n\n```\nx\n```\n#### P\n\n```\n15 mm\n```\n```\n⚫\n```\n\n```",
+        "marks": 1,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a i** (^31)\n3\n\n#### 120"
+    },
+    {
+        "id": 8,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "0 10 N C\n\n#### 15 10\n\n#### V\n\n#### E\n\n```\nd\n```\n```\n−\n= = − = \n\n```\n#### ✓\n\n#### 1\n\n**a ii** (^3)\n8.0 10\n\n#### V\n\n```\nE V x\nx\n```\n#### \n\n#### = −   = −  \n\n#### \n\n#### ✓\n\n```\n33\nV − = −  0 8.0 10 ( x −  = − 0) V 8.0 10 x ✓\n```\n```\n(where V is in volts and x in m)\n```\n#### 2\n\n**b i** 19 3\n11 2\n27",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 1,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "6 10 8.0 10\n\n```\n7.66 10 m s\n1.67 10\n```\n#### F\n\n```\na\nm\n```\n```\n−\n−\n−\n```\n####   \n\n#### = = = \n\n#### \n\n#### ✓\n\n```\n3\n2 7 7\n11\n```\n#### 1 2 2 15 10\n\n```\n1.979 10 2.0 10 s\n2 7.66 10\n```\n```\ns\ns at t\na\n```\n```\n−\n −−\n=  = = =   \n\n```\n#### ✓\n\n#### 2\n\n**b ii** (^) _v at_ = =  7.66 10^11 1.979 10 = −−^7 1.5 10 m s^51 ✓ **1\nc** (^2) 2 2 2\n4\n\n#### 2\n\n```\ns s s\nt\naaa\n```\n####  \n\n#### = = = \n\n#### \n\n#### ✓\n\n```\nSo, time doubles✓\n```\n```\nv   = a t acceleration halves and time doubles so no change✓\n```\n#### OR\n\n(^12)\n\n#### 2\n\n```\nmv = q V so no change to speed since  V does not change ✓\n```\n#### 3",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 14,
+        "topic": "D.3",
+        "type": "fr",
+        "text": "```\nA proton of mass m p enters a region of magnetic field at point X and exits at point Y. The\n```\n```\nspeed of the proton at X is v. The path followed by the proton is a quarter of a circle.\n```\n```\n(a) State and explain whether the speed of the proton at Y is the same as the speed at X. [2]\n```\n```\n(b) Suggest why the path of the proton is circular. [1]\n```\n```\n(c) (i) Show that the radius of the circular path is given by\n```\n```\np\n,\n```\n```\nmv\nR\nqB\n```\n```\n= where B is the magnetic flux\n```\n```\ndensity. [ 1 ]\n```\n```\n(ii) The speed of the proton is 3.6× 10\n```\n```\n6\nm s\n```\n```\n−1\nat X and the magnetic flux density\n```\n```\nis 0.25 T. Show that the radius of the path is 15 cm. [1]\n```\n```\n(iii) Calculate the time the proton is in the region of the magnetic field. [2]\n```\n```\n(d) Another proton enters the region of magnetic field at Z with half the speed of the proton in\n```\n```\n(c). The path in the region of the magnetic field is also a quarter circle. Determine how the\n```\n```\nanswer to (c) (iii) changes, if at all. [2]\n```\n```\n(e) (i) A beam of singly ionised atoms of neon enters the region of magnetic field at X. The ions\n```\n```\nhave the same speed. The beam splits into two beams: B 1 of radius 38.0 cm and B 2 of\n```\n```\nradius 41.8 cm. The ions in beam B 1 have mass 3.32× 10\n```\n```\n−26\nkg. Predict the mass of the ions in\n```\n```\nbeam B 2. [2]\n```\n```\n(ii ) Suggest the implication of (e) (i) for nuclear structure. [2]\n```\n#### X\n\n#### Y\n\n#### Z\n\n\n```",
+        "marks": 2,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a** The work done by the magnetic force is zero because the force is at right angles\n\n```\nto the velocity✓\n```\n```\nThus, there is no change in the kinetic energy and speed✓\n```\n#### 2\n\n**b** (^) Because the magnetic force is at right angles to the velocity providing the\ncentripetal force✓\n\n#### 1\n\n**c i**\n\n```\n2\nmv\nqvB\nR\n```\n#### = ✓\n\n```\nRe-arranging to get answer.\n```\n#### 1\n\n**c ii** (^) p^276\n19"
+    },
+    {
+        "id": 1,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "67 10 3.6 10\n\n```\n0.150 m 15 cm\n1.6 10 0.25\n```\n```\nmv\nR\nqB\n```\n```\n−\n```\n```\n−\n```\n####   \n\n#### = = = =\n\n#### \n\n#### ✓\n\n#### 1\n\n**c iii** (^12)\n\n#### 4\n\n#### R\n\n#### T\n\n```\nv\n```\n### \n\n#### = ✓\n\n```\n8\n6\n```\n#### 1 2 0.15\n\n```\n6.5 10 s\n4 3.6 10\n```\n#### T\n\n###  −\n\n#### =  = \n\n#### \n\n#### ✓\n\n#### 2\n\n**d**\nFrom\n\n```\np\n,\n```\n```\nmv\nR\nqB\n```\n```\n=^ the radius will halve ✓^\n```\n#### 2\n\n(^12)\n\n#### 4\n\n#### 2\n\n#### R\n\n#### TT\n\n```\nv\n```\n#### \n\n```\n=  = so time does not change ✓\n```\n#### 2\n\n**e i** (^11)\n22\n_Rm\nRm_\n\n#### = ✓\n\n```\n26\n26\n2\n2\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 38,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "0 3.32 10\n\n```\n3.65 10 kg\n41.8\n```\n```\nm\nm\n```\n```\n−\n −\n=  =  ✓\n```\n#### 2\n\n**e ii** We have two types of atoms of the same chemical element✓\n\n```\nWhich differ in mass due to extra neutrons in the nucleus, evidence for\n```\n```\nisotopes✓\n```\n#### 2",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 15,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "```\nAn electron is accelerated from rest by a potential difference of 29 V.\n```\n```\n(a) Show that the electron acquires a speed of 3.2× 10\n```\n```\n6\nm s\n```\n```\n− 1\n```\n. [2]\n\n```\nThe accelerated electron enters the region between two parallel oppositely charged plates at\n```\n```\npoint A. The electron exits the plates at point B after having moved a vertical distance of 0.25\n```\n```\ncm. The length of the plates is 2.0 cm.\n```\n```\n(b) Calculate the time the electron spends within the plates. [1]\n```\n```\n(c) Determine the magnitude of the electric field within the plates. [4]\n```\n```\n(d) Calculate the angle that the velocity of the electron makes with the horizontal at\n```\n```\npoint B. [2]\n```\n```\n(e) Calculate the work done on the electron from A to B. [2]\n```\n```\n(f) Using your answer to (e), state the potential difference between points A and B. [1]\n```\n\n```",
+        "marks": 2,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a**\n\n(^122)\n\n#### 2\n\n```\nqV\nmv q V v\nm\n```\n#### \n\n#### =   = ✓\n\n```\n19\n6 6 1\n31\n```\n#### 2 1.6 10 29.1\n\n```\n3.193 10 3.2 10 m s\n9.1 10\n```\n```\nv\n```\n```\n−\n−\n−\n```\n####   \n\n#### = =   \n\n#### \n\n#### ✓\n\n#### 2\n\n**b**\n\n```\n2\n99\n6\n```"
+    },
+    {
+        "id": 2,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "0 10\n\n```\n6.26 10 6.3 10 s\n3.193 10\n```\n```\nd\nt\nv\n```\n```\n−\n −−\n= = =   \n\n```\n#### ✓\n\n#### 1\n\n**c** (^2)\n2\n\n#### 12\n\n#### 2\n\n```\ny\ny at a\nt\n```\n#### =  = ✓^\n\n```\n2\n14 2\n92\n```\n#### 2 0.25 10\n\n```\n1.276 10 m s\n(6.26 10 )\n```\n```\na\n```\n```\n−\n−\n−\n```\n#### \n\n#### = = \n\n#### \n\n#### ✓\n\n```\nqE ma\naE\nmq\n```\n#### =  = ✓\n\n```\n31 14\n1\n19\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 9,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "1 10 1.276 10",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 725,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "7 730 N C",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 1,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "6 10\n\n#### E\n\n```\n−\n−\n−\n```\n####   \n\n#### = = \n\n#### \n\n#### ✓\n\n#### 4\n\n**d** (^) 1.276 10^14 6.26 10^9 7.988 10 m s^51\n_vy at_\n−−\n= =    =  ✓\n5\n11\n6",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 7,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "988 10\n\n```\ntan tan 14\n3.193 10\n```\n```\ny\n```\n```\nx\n```\n```\nv\n```\n```\nv\n```\n### \n\n#### −−\n\n#### = = =\n\n#### \n\n#### ✓\n\n#### 2\n\n**e** _W_ == _Fy qEy_ ✓^\n\n```\n19 2 19\nW 1.6 10 725.7 0.25 10 2.9 10 J\n```\n```\n− − −\n=     =  ✓\n```\n#### 2\n\n**f**\n\n```\n19\n```\n```\n19\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 2,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "9 10",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 1,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "8 V",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 1,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "6 10\n\n#### W\n\n#### V\n\n```\nq\n```\n```\n−\n```\n```\n−\n```\n#### \n\n####  = = =\n\n#### \n\n#### ✓\n\n#### 1",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 16,
+        "topic": "D.2",
+        "type": "fr",
+        "text": "```\nA sphere of radius 0.25 m has positive charge + 8.8 μC uniformly distributed on its surface. A\n```\n```\nsmall pellet of mass 0.075 kg and charge + 2.4 μC is directed radially at the sphere. When the\n```\n```\npellet is at a distance of 0.75 m from the centre of the sphere, its speed is 3.2 m s\n```\n```\n−1\n.\n```\n```\n(a) Determine the distance from the centre of the sphere at which the pellet will stop. [3]\n```\n```\n(b) Describe qualitatively the subsequent motion of the pellet. [3]\n```\n```\n(c) (i) Determine the speed of the pellet after it moves very far from the sphere. [2]\n```\n```\n(ii) On the axes draw a sketch graph to show the variation of the speed of the pellet with\n```\n```\ndistance from the centre of the sphere. [2]\n```\n```\n0 0.3 0.6 0.9 1.2 1.5 1.8 2.1 2.4 2.7 3\n```\n```\n0 xm\n```\n```\n1\n```\n```\n2\n```\n```\n3\n```\n```\n4\n```\n```\n5\n```\n```\nvms^1\n```\n\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a** Total energy:\n\n```\n9 6 6\n1 221 8.99 10 8.8 10 2.4 10\n0.075 3.2 0.6372 J\n2 2 0.75\n```\n```\nkQq\nmv\nr\n```\n```\n−−\n    \n+ =   + = ✓^\n```\n```\n9 6 6\n8.99 10 8.8 10 2.4 10\n0.6372 J\nr\n```\n```\n−−\n    \n= ✓^\n```\n```\nr =0.298 0.30 m✓\n```\n#### 3\n\n**b** Moves radially away from sphere✓\n\n```\nWith increasing (but bounded) speed✓\n```\n```\nAnd decreasing acceleration✓\n```\n#### 3\n\n**c i** (^12)\n0.075 0.6372 J\n2\n  = _v_ ✓\n1\n_v_ 4.1 m s\n−\n= ✓\n\n#### 2\n\n**c ii**\n\n```\n0 0.3 0.6 0.9 1.2 1.5 1.8 2.1 2.4 2.7 3\n```\n```\n0 xm\n```\n```\n1\n```\n```\n2\n```\n```\n3\n```\n```\n4\n```\n```\n5\n```\n```\nvms^1\n```\n```\nZero speed at 0.30 m✓\n```\n```\nCurve showing speed approaching^ constant value 4.1 m s-^1 as distance increases✓\n```\n#### 2\n\n\n**17.** (a) State what is meant by an _equipotential surface_. [1]\n\n```\n(b) The diagram shows five equipotential surfaces around two charged spheres.\n```\n```\n(i) State and explain what can be deduced about the sign of the charges on the two spheres\n```\n```\njust from this diagram. [2]\n```\n```\n(ii) Draw lines to represent field lines for this arrangement of charges. You must draw six field\n```\n```\nlines. [2]\n```\n```\n(iii) Two consecutive lines are separated by a potential difference of 25 V and the innermost\n```\nline has potential 250 V. Calculate the work done to move a charge of 3.0 μC from point A\n\nto point B. [2]\n\n```\n(iv) The distance between points B and C is 4.0 cm. Estimate the average electric field strength\n```\nbetween B and C. [1]\n\n```\n(c) The equipotential surfaces tend to become spherical as the distance from the sources\n```\n```\nincreases. Explain this observation. [2]\n```\n\n```"
+    },
+    {
+        "id": 18,
+        "topic": "D.3",
+        "type": "fr",
+        "text": "```\nA square loop of side 0.25 m is made to move at constant speed 5. 0 cm s\n```\n- 1\n   . The loop enters a\n\n```\nregion of uniform magnetic field of strength 0.40 T directed into the plane of the page. There\n```\n```\nare 50 turns of conducting wire around the loop.\n```\nThe loop begins to enter the region of magnetic field at _t_ = 0.\n\n```\n(a) On a copy of the axes below, draw a graph to show the variation with time t of:\n```\n```\n(i) the magnetic flux linkage Φ through the loop. [3]\n```\n```\n(ii) the induced emf in the loop. [3]\n```\n```\n(b) The total resistance of the wire around the loop is 0.75 Ω.\n```\n```\n(i) Calculate the power exerted by the agent pushing the loop. [3]\n```\n```\n(ii) Explain what has become of this power. [2]\n```\n\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a i**\n\n```\n0 5 10 15 20 25 30\n```\n```\n0.0 ts\n```\n```\n0.2\n```\n```\n0.4\n```\n```\n0.6\n```\n```\n0.8\n```\n```\n1.0\n```\n```\n1.2\n```\n```\n1.4\n```\n```\nWb\n```\n```\nCorrect time to fully enter✓\n```\n```\nCorrect time to fully exit✓\n```\n```\nCorrect peak flux:\n```\n```\n2\n```\n###  = 50 0.25 =0.40 1.25 Wb✓\n\n#### 3\n\n**a ii**\n\n```\n5 10 15 20 25 30\n```\n```\nts\n```\n```\n0.4\n```\n```\n0.2\n```\n```\n0.2\n```\n```\n0.4\n```\n```\nemfV\n```\n```\n(Accept reverse of this.)\n```\n```\nCorrect voltage✓\n```\n```\nTimes consistent with (i) ✓\n```\n```\nZero emf while loop is totally within magnetic field✓\n```\n#### 3\n\n**b i**\nThe induced current is"
+    },
+    {
+        "id": 0,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "25",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 0,
+        "topic": "D.1",
+        "type": "fr",
+        "text": "333 A",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 0,
+        "topic": "D.3",
+        "type": "fr",
+        "text": "75\n\n#### = ✓\n\n```\nThe magnetic force acting on the loop while entering or leaving the region of\n```\n```\nmagnetic field is F = =   NBIL 50 0.40 0.333 0.25 1.665 N = ✓\n```\n```\nHence the power in pushing the loop when entering or leaving\n```\n```\nis P = = Fv 1.665 0.050 83 mW = ✓\n```\n#### 3\n\n**b ii** (^) This is power that is dissipated as thermal energy✓\nIn the cables of the coil (P VI= =1.25 0.333 83 mW = )✓\n\n#### 2",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "See marking scheme for full answer."
+    },
+    {
+        "id": 19,
+        "topic": "D.3",
+        "type": "fr",
+        "text": "```\nThe diagram shows a small magnet that has been dropped from above a solenoid. As the\n```\n```\nmagnet falls through the solenoid, a sensor shows how the induced emf in the solenoid\n```\n```\nvaries with time.\n```\n```\n(a) Explain why an emf is induced in the solenoid from A to B. [3]\n```\n```\n(b) Explain why the induced emf from C to D, when compared to that from A to B, has:\n```\n```\n(i) a greater peak value [2]\n```\n```\n(ii) a shorter duration. [1]\n```\n```\n(c) Suggest:\n```\n(i) what the areas between the graph and the time axis from A to B and from C to D\n\n```\nrepresent [2]\n```\n```\n(ii) whether these areas are equal. [2]\n```\n\n```",
+        "marks": 3,
+        "options": null,
+        "answer": null,
+        "fullAnswer": "Marks\n```\n**a** (^) As the magnet gets closer to the top of the coil the magnetic field at the coil\nincreases✓\nHence the magnetic flux though the coil increases✓\n\n### By Faraday’s law, a changing flux induces an emf✓\n\n#### 3\n\n**b i** From C to D the magnet is moving faster than from A to B✓\n\n```\nHence the rate of change of flux, and therefore emf, is higher✓\n```\n#### 2\n\n**b ii** Since the magnet moves faster it takes less time to move past the magnet✓ **1**\n\n**c i**\nThe graph is a graph of emf versus time i.e.\n_t_\n\n#### \n\n#### \n\n```\nversus time✓\n```\n### So, the area is the change in flux✓\n\n#### 2\n\n**c ii** (^) The area from A to B is the change in flux from when the magnetic is very far\naway until it is essentially in the middle of the coil✓\nThe area from C to D is the exact opposite and so the areas are the same (in\nmagnitude) ✓\n\n#### 2\n\n\n### 20.\n\n### The diagram shows an AC generator. The generator is connected to an external resistor R.\n\n```\n(a) Suggest why an emf will be induced in the coil when the coil is rotating. [ 3 ]\n```\n```\n(b) The graph shows the variation of the voltage V at the ends of the resistor R with time t.\n```\n```\n5 10 15 20\n```\n```\ntms\n```\n```\n100\n```\n```\n50\n```\n```\n0\n```\n```\n50\n```\n```\n100\n```\n```\nVV\n```\n```\n(i) Calculate the frequency of rotation of the coil. [1]\n```\n```\n(ii) Mark with the letter M a point on the graph where the flux through the coil is zero. [1]\n```\n```\n(iii) The resistance of R is 25 Ω. On the axes draw a graph to show the variation with time of\n```\n```\nthe current in R. [2]\n```\n#### R\n\n\n```\n5 10 15 20\n```\n```\ntms\n```\n```\n100\n```\n```\n50\n```\n```\n0\n```\n```\n50\n```\n```\n100\n```\n```\nIA\n```\n(iv) Determine the maximum power dissipated in R. [ 2 ]\n\n(c) The frequency of rotation of the coil is doubled. On the axes draw a graph to show the\n\nvariation with time of the power dissipated in the resistor. [2]\n\n```\n0 2 4 6 8 10\n```\n0.0 tms\n\n0.5\n\n1.0\n\n1.5\n\n2.0\n\n```\nPkW\n```\n\n```"
+    }
+];
 
         // ====================================================================
         // APPLICATION STATE
@@ -667,19 +3118,7 @@
         // ====================================================================
         // INITIALIZATION
         // ====================================================================
-        async function init() {
-            // Show loading message
-            questionText.textContent = 'Loading questions from markdown files...';
-
-            // Load questions from markdown files
-            await loadQuestionsFromMarkdown();
-
-            // Check if questions were loaded
-            if (questions.length === 0) {
-                questionText.textContent = 'Error: No questions were loaded. Please check that the markdown files are in the same directory.';
-                return;
-            }
-
+        function init() {
             // Filter to only include D.1, D.2, and D.3 questions
             const filteredQuestions = questions.filter(q =>
                 q.topic === 'D.1' || q.topic === 'D.2' || q.topic === 'D.3'
