@@ -1,0 +1,17 @@
+# Node modules
+node_modules/
+package-lock.json
+
+# Backup files
+*-backup.*
+*.bak
+
+# Temporary development files
+*-parsed.js
+*-questions.json
+check-*.js
+update-*.js
+update-*.cjs
+
+# Build artifacts
+*.log
