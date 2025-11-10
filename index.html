@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IB Physics Topic D Question Bank</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>IB Physics Topic D - Question Bank</h1>
+        <p class="subtitle">Gravitational Fields, Electric Fields & Electromagnetic Induction</p>
+    </header>
+
+    <div class="container">
+        <nav class="tabs">
+            <button class="tab-button active" data-tab="paper2">Paper 2 (20 Questions)</button>
+            <button class="tab-button" data-tab="multiple-choice">Multiple Choice (100 Questions)</button>
+            <button class="tab-button" data-tab="all">All Questions (120)</button>
+        </nav>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="search">Search:</label>
+                <input type="text" id="search" placeholder="Search questions...">
+            </div>
+            <div class="filter-group">
+                <label for="topic-filter">Filter by Topic:</label>
+                <select id="topic-filter">
+                    <option value="all">All Topics</option>
+                    <option value="gravitational">Gravitational Fields</option>
+                    <option value="electric">Electric Fields</option>
+                    <option value="magnetic">Magnetic Fields</option>
+                    <option value="induction">Electromagnetic Induction</option>
+                </select>
+            </div>
+            <div class="stats">
+                <span id="question-count">Loading questions...</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Loading questions from markdown files...</p>
+            </div>
+
+            <div id="error" class="error" style="display: none;">
+                <h3>Error Loading Questions</h3>
+                <p id="error-message"></p>
+            </div>
+
+            <div id="questions-container" class="questions-container" style="display: none;">
+                <!-- Questions will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>IB Physics Topic D Practice Questions | Paper 1 & Paper 2</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
